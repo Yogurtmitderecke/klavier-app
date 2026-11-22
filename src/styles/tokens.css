@@ -49,6 +49,7 @@ body {
 
 /* App-Hülle: unterer freier Bereich (96px + Safe Area) bleibt leer (D-06 / UI-02). */
 .app {
+  position: relative;
   min-height: 100dvh;
   box-sizing: border-box;
   padding-top: calc(24px + env(safe-area-inset-top));
@@ -140,6 +141,7 @@ h1:focus {
 .screen-header {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-md);
 }
@@ -149,4 +151,24 @@ h1:focus {
   font-size: var(--font-heading);
   font-weight: 600;
   line-height: 1.2;
+}
+
+/* Versions-Label oben rechts (D-06: nie im unteren freien Bereich). */
+.version-label {
+  position: absolute;
+  top: calc(24px + env(safe-area-inset-top));
+  right: calc(32px + env(safe-area-inset-right));
+  margin: 0;
+  font-size: var(--font-label);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* In der Übersicht teilt sich das Label die Kopfzeile mit der Überschrift:
+   dort als Flex-Element rechts statt absolut, damit die Überschrift nie verdeckt wird. */
+.screen-header .version-label {
+  position: static;
+  margin-left: auto;
 }

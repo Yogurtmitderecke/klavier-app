@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { VersionLabel } from '../components/VersionLabel'
 import { TEXTE } from '../texte'
 
 export function OverviewScreen() {
@@ -13,6 +14,7 @@ export function OverviewScreen() {
       <h1 ref={titelRef} tabIndex={-1}>
         {TEXTE.uebersicht.uebersichtTitel}
       </h1>
+      <VersionLabel />
     </header>
   )
 }

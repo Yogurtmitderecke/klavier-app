@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { VersionLabel } from '../components/VersionLabel'
 import { useAppStore } from '../state/appStore'
 import { TEXTE } from '../texte'
 
@@ -12,6 +13,7 @@ export function WelcomeScreen() {
 
   return (
     <div className="welcome">
+      <VersionLabel />
       <h1 ref={titelRef} tabIndex={-1}>
         {TEXTE.willkommen.appTitel}
       </h1>
