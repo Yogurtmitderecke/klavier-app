@@ -172,3 +172,219 @@ h1:focus {
   position: static;
   margin-left: auto;
 }
+
+/* Kacheln der Übersicht (D-04): 3 in einer Reihe, 48px unter der Kopfzeile. */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-lg);
+  margin-top: var(--space-2xl);
+}
+
+.tile {
+  position: relative;
+  min-height: 192px;
+  padding: var(--space-lg);
+  border: none;
+  border-radius: 16px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  transition: background-color 100ms ease-out, transform 100ms ease-out;
+}
+
+.tile-titel {
+  font-size: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.tile-beschreibung {
+  font-size: var(--font-label);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+/* Ausgegraute Kachel („kommt bald“) – kein Drück-Effekt. */
+.tile--gesperrt {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.tile--gesperrt .tile-beschreibung {
+  color: var(--color-text-muted);
+}
+
+.tile-badge {
+  position: absolute;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  padding: var(--space-xs) 12px;
+  border: 1px solid var(--color-badge-border);
+  border-radius: 999px;
+  font-size: var(--font-label);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.tile:not(.tile--gesperrt):active {
+  background: var(--color-surface-pressed);
+  transform: scale(0.98);
+}
+
+@media (hover: hover) {
+  .tile:not(.tile--gesperrt):hover {
+    background: var(--color-surface-pressed);
+  }
+}
+
+.tile:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+/* Hinweis „Dieser Bereich kommt bald.“ 24px unter der Kachelreihe. */
+.kommt-bald-hinweis {
+  margin-top: var(--space-lg);
+  min-height: 36px;
+}
+
+.kommt-bald-hinweis p {
+  margin: 0;
+  font-size: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  opacity: 1;
+  transition: opacity 300ms ease-out;
+}
+
+.kommt-bald-hinweis p.ausblenden {
+  opacity: 0;
+}
+
+@media (max-width: 720px) {
+  .tiles {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .tile {
+    min-height: 128px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile,
+  .kommt-bald-hinweis p {
+    transition: none;
+  }
+
+  .tile:not(.tile--gesperrt):active {
+    transform: none;
+  }
+
+  /* Ohne Ausblenden: sofort anzeigen und sofort verstecken. */
+  .kommt-bald-hinweis p.ausblenden {
+    opacity: 1;
+  }
+}
+
+/* Unterseiten: Zurück-Knopf oben links, Überschrift 24px rechts daneben (D-06). */
+.screen-header--unterseite {
+  gap: var(--space-lg);
+}
+
+.btn-back {
+  height: 64px;
+  min-width: 160px;
+  padding: 0 var(--space-lg);
+  border: none;
+  border-radius: 16px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-heading);
+  font-weight: 600;
+  transition: background-color 100ms ease-out, transform 100ms ease-out;
+}
+
+.btn-back:active {
+  background: var(--color-surface-pressed);
+  transform: scale(0.98);
+}
+
+@media (hover: hover) {
+  .btn-back:hover {
+    background: var(--color-surface-pressed);
+  }
+}
+
+.btn-back:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-back {
+    transition: none;
+  }
+
+  .btn-back:active {
+    transform: none;
+  }
+}
+
+.unterseite-text {
+  margin: var(--space-2xl) 0 0;
+  max-width: 720px;
+  font-size: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Warnung ohne HTTPS (D-07): direkt über dem Start-Knopf, 24px Abstand. */
+.warning-bar {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 720px;
+  margin-bottom: var(--space-lg);
+  padding: var(--space-lg);
+  border-left: 4px solid var(--color-warning);
+  border-radius: 12px;
+  background: var(--color-warning-surface);
+  color: var(--color-text);
+  font-size: var(--font-body);
+  line-height: 1.5;
+  text-align: left;
+}
+
+.warning-bar p {
+  margin: 0;
+}
+
+.warning-bar strong {
+  font-weight: 600;
+}
+
+.warning-bar-link {
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  padding: var(--space-sm) 0;
+  box-sizing: border-box;
+  color: var(--color-text);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.warning-bar-link:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+}
