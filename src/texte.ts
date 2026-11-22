@@ -8,5 +8,21 @@ export const TEXTE = {
   },
   uebersicht: {
     uebersichtTitel: 'Was möchtest du tun?',
+    kacheln: {
+      mikrofonTest: {
+        titel: 'Mikrofon-Test',
+        beschreibung: 'Prüfen, ob die App dein Klavier hört',
+      },
+      stueckeUeben: {
+        titel: 'Stücke üben',
+        beschreibung: 'Stücke mit fallenden Noten lernen',
+      },
+      einstellungen: {
+        titel: 'Einstellungen',
+        beschreibung: 'Stimmung, Empfindlichkeit, Ansicht',
+      },
+    },
+    kommtBald: 'kommt bald',
+    kommtBaldHinweis: 'Dieser Bereich kommt bald.',
   },
 } as const
