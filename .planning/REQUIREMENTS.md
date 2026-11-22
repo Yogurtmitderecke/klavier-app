@@ -74,8 +74,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Oberfläche (UI)
 
-- [ ] **UI-01**: Die gesamte Oberfläche ist auf Deutsch
-- [ ] **UI-02**: Schrift und Bedienelemente sind aus ca. 60 cm Abstand gut lesbar und antippbar (Quer-Format auf dem iPad, unterer Bildschirmrand bleibt frei wegen Notenständer-Leiste)
+- [x] **UI-01**: Die gesamte Oberfläche ist auf Deutsch
+- [x] **UI-02**: Schrift und Bedienelemente sind aus ca. 60 cm Abstand gut lesbar und antippbar (Quer-Format auf dem iPad, unterer Bildschirmrand bleibt frei wegen Notenständer-Leiste)
 - [ ] **UI-03**: Eigener Name, eigenes Design, keine Inhalte/Gestaltung von flowkey
 
 ### App-Installation (PWA)
@@ -170,8 +170,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RUECK-02 | Phase 7 | Pending |
 | DAT-01 | Phase 10 | Pending |
 | DAT-02 | Phase 9 | Pending |
-| UI-01 | Phase 1 | Pending |
-| UI-02 | Phase 1 | Pending |
+| UI-01 | Phase 1 | Complete |
+| UI-02 | Phase 1 | Complete |
 | UI-03 | Phase 1 | Pending |
 | PWA-01 | Phase 11 | Pending |
 | PWA-02 | Phase 11 | Pending |

@@ -46,7 +46,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Walking skeleton: scaffold, test infra, branch main, German welcome -> Start -> overview (Zustand, UI-SPEC tokens)
+- [x] 01-01-PLAN.md — Walking skeleton: scaffold, test infra, branch main, German welcome -> Start -> overview (Zustand, UI-SPEC tokens)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -239,7 +239,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Grundgerüst und Online-Adresse | 0/5 | Not started | - |
+| 1. Grundgerüst und Online-Adresse | 1/5 | In Progress|  |
 | 2. Mikrofon-Testseite | 0/TBD | Not started | - |
 | 3. Kalibrierung | 0/TBD | Not started | - |
 | 4. Anschlag-Erkennung | 0/TBD | Not started | - |
