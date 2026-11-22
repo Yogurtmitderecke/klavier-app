@@ -10,7 +10,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Bereitstellung (DEPL)
 
 - [ ] **DEPL-01**: Nutzer kann die App über eine HTTPS-Adresse (kostenloses Hosting, z. B. GitHub Pages) auf iPad und Laptop öffnen
-- [ ] **DEPL-02**: Nutzer sieht eine verständliche deutsche Fehlermeldung, wenn die Seite ohne HTTPS geöffnet wird und das Mikrofon deshalb nicht geht
+- [x] **DEPL-02**: Nutzer sieht eine verständliche deutsche Fehlermeldung, wenn die Seite ohne HTTPS geöffnet wird und das Mikrofon deshalb nicht geht
 - [x] **DEPL-03**: Nutzer sieht in der App eine Versionsnummer, um zu erkennen, ob ein Update angekommen ist
 - [ ] **DEPL-04**: Nutzer hat eine deutsche Schritt-für-Schritt-Anleitung (für Nicht-Programmierer), wie man die App kostenlos mit HTTPS online stellt und aktualisiert
 
@@ -133,7 +133,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | DEPL-01 | Phase 1 | Pending |
-| DEPL-02 | Phase 1 | Pending |
+| DEPL-02 | Phase 1 | Complete |
 | DEPL-03 | Phase 1 | Complete |
 | DEPL-04 | Phase 11 | Pending |
 | MIC-01 | Phase 2 | Pending |
