@@ -465,16 +465,19 @@ it('formatiert Version, Datum (Berlin) und Hash', () => {
 | A7 | `vi.stubGlobal('isSecureContext', false)` works in jsdom 31 | Code Examples | Test fails. Use the injectable `isInsecureContext(win)` / prop instead |
 | A8 | Package legitimacy of zustand/vitest/jsdom/RTL (slopcheck not run) | Package audit | Very low. All are long-standing official packages |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **GitHub username / account status**
    - Known: the repo name is `klavier-app`, public.
    - Unclear: whether the user has an account, and the username (needed for the URL).
    - Recommendation: the human checkpoint covers both "Konto anlegen" and "einloggen". `__SECURE_URL__` comes from `GITHUB_REPOSITORY_OWNER` in CI, so the code needs no username. The local fallback shows the placeholder `<benutzername>`.
+   - **RESOLVED:** Plan 01-03 Task 2 (human-action checkpoint, Teil A) has the user create or log into the account and reply with the username; Task 3 uses it for the remote and the live URL.
 2. **What goes into the public repo?**
    - Known: `.planning/`, `CLAUDE.md` and `.claude/` exist locally and are untracked or tracked (`.claude/` is untracked).
    - Recommendation: commit `.planning/` and `CLAUDE.md` (the GSD workflow relies on them), ignore `.claude/settings.local.json` and ask the user about the rest of `.claude/` in the GitHub checkpoint. Low risk either way.
+   - **RESOLVED:** Plan 01-03 Task 2 Teil D asks the user to approve the public contents (stop if "nicht ok"); plan 01-01 Task 2 adds `.claude/settings.local.json` to `.gitignore` and `.claude/` is never staged.
 3. **iPadOS version** — ask at the piano test (Einstellungen → Allgemein → Info → Softwareversion) and record it in STATE.md (per CONTEXT).
+   - **RESOLVED:** Plan 01-05 Task 3 (piano-test checkpoint, Teil D) asks for the iPadOS version; plan 01-05 output records it in STATE.md.
 
 ## Environment Availability
 

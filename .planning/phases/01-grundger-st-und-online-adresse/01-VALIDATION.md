@@ -1,8 +1,8 @@
 ---
 phase: 1
 slug: grundger-st-und-online-adresse
-status: draft
-nyquist_compliant: false
+status: planned
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-11-22
 ---
@@ -37,7 +37,30 @@ created: 2026-11-22
 
 ## Per-Task Verification Map
 
-*Filled in by the planner/executor with concrete task IDs. Requirement-level map from research:*
+### Task-level map (planner, 2026-11-22)
+
+Full commands live in each task's `<verify><automated>`; summary below.
+
+| Task ID | Wave | Type | Requirement(s) | Automated verify (summary) | Status |
+|---------|------|------|----------------|----------------------------|--------|
+| 01-01-T1 | 1 | checkpoint:human-verify (package legitimacy) | — (supply chain) | `test ! -d node_modules/zustand` (nothing installed before approval) | ⬜ pending |
+| 01-01-T2 | 1 | auto, tdd (RED) | UI-01, UI-02 | branch = main, base/test script/.gitignore greps, `vitest run src/App.test.tsx` fails AND output mentions `state/appStore` | ⬜ pending |
+| 01-01-T3 | 1 | auto, tdd (GREEN) | UI-01, UI-02 | `npm test && npm run lint && npm run build`, base-path grep in dist, `lang="de"`, viewport-fit, bottom free zone, no template strings, no mic/router/hash code | ⬜ pending |
+| 01-02-T1 | 2 | auto, tdd | DEPL-03 | `npx vitest run src/lib/version.test.ts src/components/VersionLabel.test.tsx` + full test/lint/build + Berlin tz + VersionLabel greps | ⬜ pending |
+| 01-02-T2 | 2 | auto | UI-03 | favicon has no "vite", has #16181D, icons.svg/src/assets gone, build copies favicon | ⬜ pending |
+| 01-03-T1 | 3 | auto | DEPL-01 | deploy.yml greps (main, lint, test, base-path gate, pinned deploy-pages, id-token) + `npm ci && lint && test && build` + .claude ignore check | ⬜ pending |
+| 01-03-T2 | 3 | checkpoint:human-action | DEPL-01 | `curl -sf api.github.com/repos/<user>/klavier-app` (public, empty) | ⬜ pending |
+| 01-03-T3 | 3 | auto | DEPL-01, DEPL-03 | live URL contains "Klavier-App"; live bundle contains `git rev-parse --short=7 origin/main` (pushed commit) | ⬜ pending |
+| 01-04-T1 | 3 | auto, tdd | UI-01, UI-02 | `npx vitest run src/App.test.tsx` + lint/build + tile/token greps | ⬜ pending |
+| 01-04-T2 | 3 | auto, tdd | UI-02 | `npx vitest run src/App.test.tsx` + lint/build + BackButton greps + no mic/router/hash code | ⬜ pending |
+| 01-04-T3 | 3 | auto, tdd | DEPL-02, UI-01 | `npx vitest run src/lib/secureContext.test.ts src/screens/WelcomeScreen.test.tsx` + full test/lint/build + WarningBar greps | ⬜ pending |
+| 01-05-T1 | 4 | checkpoint:human-verify | DEPL-01, UI-03 | live URL contains "Klavier-App" (pre-check before user looks) | ⬜ pending |
+| 01-05-T2 | 4 | auto | DEPL-03 | version 0.2.0, nothing unpushed, live bundle contains 0.2.0 and HEAD short sha | ⬜ pending |
+| 01-05-T3 | 4 | checkpoint:human-verify | DEPL-02, UI-01, UI-02 | `npx vitest run src/screens/WelcomeScreen.test.tsx src/App.test.tsx` before the piano test | ⬜ pending |
+
+Sampling continuity: every task has an `<automated>` command; no 3 consecutive tasks without automated verify.
+
+### Requirement-level map (from research)
 
 | Requirement | Behavior | Test Type | Automated Command | File Exists | Status |
 |-------------|----------|-----------|-------------------|-------------|--------|
@@ -80,11 +103,11 @@ created: 2026-11-22
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references (test files are created inside the TDD tasks that need them: 01-01-T2, 01-02-T1, 01-04-T3; CI steps in 01-03-T1)
+- [x] No watch-mode flags (`vitest run` only)
+- [x] Feedback latency < 30s (local commands; post-deploy polling is bounded and separate)
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** planner sign-off 2026-11-22 (wave_0_complete stays false until execution)
