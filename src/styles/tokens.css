@@ -348,3 +348,43 @@ h1:focus {
   font-weight: 400;
   line-height: 1.5;
 }
+
+/* Warnung ohne HTTPS (D-07): direkt über dem Start-Knopf, 24px Abstand. */
+.warning-bar {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 720px;
+  margin-bottom: var(--space-lg);
+  padding: var(--space-lg);
+  border-left: 4px solid var(--color-warning);
+  border-radius: 12px;
+  background: var(--color-warning-surface);
+  color: var(--color-text);
+  font-size: var(--font-body);
+  line-height: 1.5;
+  text-align: left;
+}
+
+.warning-bar p {
+  margin: 0;
+}
+
+.warning-bar strong {
+  font-weight: 600;
+}
+
+.warning-bar-link {
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  padding: var(--space-sm) 0;
+  box-sizing: border-box;
+  color: var(--color-text);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.warning-bar-link:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+}

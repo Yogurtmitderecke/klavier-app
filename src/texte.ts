@@ -6,6 +6,11 @@ export const TEXTE = {
     untertitel: 'Dein Übungsplatz am Klavier.',
     start: 'Start',
   },
+  // Warnung ohne HTTPS (D-07 / DEPL-02); die Adresse kommt aus SECURE_URL.
+  warnung: {
+    titel: 'Achtung: Diese Seite ist nicht sicher verbunden.',
+    text: 'Ohne sichere Verbindung (HTTPS) erlaubt der Browser kein Mikrofon – die App kann dein Klavier hier also nicht hören. Öffne die App stattdessen über diese sichere Adresse:',
+  },
   uebersicht: {
     uebersichtTitel: 'Was möchtest du tun?',
     kacheln: {
