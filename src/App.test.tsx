@@ -83,3 +83,34 @@ describe('Übersicht mit Kacheln', () => {
     expect(region?.textContent ?? '').not.toContain('Dieser Bereich kommt bald.')
   })
 })
+
+describe('Mikrofon-Test-Platzhalter', () => {
+  beforeEach(() => {
+    useAppStore.setState({ screen: 'welcome' })
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('öffnet den Platzhalter und kehrt mit „‹ Zurück“ zur Übersicht zurück, ohne die URL zu ändern', () => {
+    render(<App />)
+    const hrefVorher = window.location.href
+
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+    fireEvent.click(screen.getByRole('button', { name: /Mikrofon-Test/ }))
+
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Mikrofon-Test')
+    expect(screen.getByRole('button', { name: '‹ Zurück' })).toBeTruthy()
+    expect(document.querySelector('.version-label')).toBeNull()
+    expect(document.body.textContent).toContain(
+      'Hier entsteht als Nächstes der Mikrofon-Test. Das Mikrofon ist noch nicht eingeschaltet. Tippe auf „Zurück“, um zur Übersicht zu gelangen.',
+    )
+    expect(window.location.href).toBe(hrefVorher)
+
+    fireEvent.click(screen.getByRole('button', { name: '‹ Zurück' }))
+
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Was möchtest du tun?')
+    expect(window.location.href).toBe(hrefVorher)
+  })
+})
