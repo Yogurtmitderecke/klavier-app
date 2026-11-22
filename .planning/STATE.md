@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-11-22T21:11:35.638Z"
+stopped_at: Phase 1 UI-SPEC approved
+last_updated: "2026-11-22T21:23:41.329Z"
 last_activity: 2026-11-22 — Roadmap erstellt (11 Phasen, 45/45 Anforderungen zugeordnet)
 progress:
   total_phases: 11
@@ -84,6 +84,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-11-22T21:11:35.630Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-grundger-st-und-online-adresse/01-CONTEXT.md
+Last session: 2026-11-22T21:23:41.322Z
+Stopped at: Phase 1 UI-SPEC approved
+Resume file: .planning/phases/01-grundger-st-und-online-adresse/01-UI-SPEC.md
