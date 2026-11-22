@@ -132,12 +132,57 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
+| DEPL-01 | Phase 1 | Pending |
+| DEPL-02 | Phase 1 | Pending |
+| DEPL-03 | Phase 1 | Pending |
+| DEPL-04 | Phase 11 | Pending |
+| MIC-01 | Phase 2 | Pending |
+| MIC-02 | Phase 2 | Pending |
+| MIC-03 | Phase 2 | Pending |
+| MIC-04 | Phase 2 | Pending |
+| MIC-05 | Phase 2 | Pending |
+| MIC-06 | Phase 4 | Pending |
+| KAL-01 | Phase 3 | Pending |
+| KAL-02 | Phase 3 | Pending |
+| KAL-03 | Phase 3 | Pending |
+| KAL-04 | Phase 3 | Pending |
+| ERK-01 | Phase 4 | Pending |
+| ERK-02 | Phase 4 | Pending |
+| ERK-03 | Phase 4 | Pending |
+| ERK-04 | Phase 7 | Pending |
+| SONG-01 | Phase 10 | Pending |
+| SONG-02 | Phase 5 | Pending |
+| SONG-03 | Phase 10 | Pending |
+| SONG-04 | Phase 10 | Pending |
+| SONG-05 | Phase 10 | Pending |
+| ANS-01 | Phase 6 | Pending |
+| ANS-02 | Phase 8 | Pending |
+| ANS-03 | Phase 8 | Pending |
+| ANS-04 | Phase 10 | Pending |
+| ANS-05 | Phase 6 | Pending |
+| UEB-01 | Phase 7 | Pending |
+| UEB-02 | Phase 9 | Pending |
+| UEB-03 | Phase 9 | Pending |
+| UEB-04 | Phase 9 | Pending |
+| UEB-05 | Phase 9 | Pending |
+| UEB-06 | Phase 9 | Pending |
+| RUECK-01 | Phase 7 | Pending |
+| RUECK-02 | Phase 7 | Pending |
+| DAT-01 | Phase 10 | Pending |
+| DAT-02 | Phase 9 | Pending |
+| UI-01 | Phase 1 | Pending |
+| UI-02 | Phase 1 | Pending |
+| UI-03 | Phase 1 | Pending |
+| PWA-01 | Phase 11 | Pending |
+| PWA-02 | Phase 11 | Pending |
+| PWA-03 | Phase 11 | Pending |
+| PWA-04 | Phase 11 | Pending |
 
 **Coverage:**
 - v1 requirements: 45 total
-- Mapped to phases: 0
-- Unmapped: 45 ⚠️
+- Mapped to phases: 45
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-11-22*
-*Last updated: 2026-11-22 after initial definition*
+*Last updated: 2026-11-22 after roadmap creation*
