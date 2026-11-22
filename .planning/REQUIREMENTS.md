@@ -11,7 +11,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **DEPL-01**: Nutzer kann die App über eine HTTPS-Adresse (kostenloses Hosting, z. B. GitHub Pages) auf iPad und Laptop öffnen
 - [ ] **DEPL-02**: Nutzer sieht eine verständliche deutsche Fehlermeldung, wenn die Seite ohne HTTPS geöffnet wird und das Mikrofon deshalb nicht geht
-- [ ] **DEPL-03**: Nutzer sieht in der App eine Versionsnummer, um zu erkennen, ob ein Update angekommen ist
+- [x] **DEPL-03**: Nutzer sieht in der App eine Versionsnummer, um zu erkennen, ob ein Update angekommen ist
 - [ ] **DEPL-04**: Nutzer hat eine deutsche Schritt-für-Schritt-Anleitung (für Nicht-Programmierer), wie man die App kostenlos mit HTTPS online stellt und aktualisiert
 
 ### Mikrofon & Testseite (MIC)
@@ -76,7 +76,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **UI-01**: Die gesamte Oberfläche ist auf Deutsch
 - [x] **UI-02**: Schrift und Bedienelemente sind aus ca. 60 cm Abstand gut lesbar und antippbar (Quer-Format auf dem iPad, unterer Bildschirmrand bleibt frei wegen Notenständer-Leiste)
-- [ ] **UI-03**: Eigener Name, eigenes Design, keine Inhalte/Gestaltung von flowkey
+- [x] **UI-03**: Eigener Name, eigenes Design, keine Inhalte/Gestaltung von flowkey
 
 ### App-Installation (PWA)
 
@@ -134,7 +134,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | DEPL-01 | Phase 1 | Pending |
 | DEPL-02 | Phase 1 | Pending |
-| DEPL-03 | Phase 1 | Pending |
+| DEPL-03 | Phase 1 | Complete |
 | DEPL-04 | Phase 11 | Pending |
 | MIC-01 | Phase 2 | Pending |
 | MIC-02 | Phase 2 | Pending |
@@ -172,7 +172,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DAT-02 | Phase 9 | Pending |
 | UI-01 | Phase 1 | Complete |
 | UI-02 | Phase 1 | Complete |
-| UI-03 | Phase 1 | Pending |
+| UI-03 | Phase 1 | Complete |
 | PWA-01 | Phase 11 | Pending |
 | PWA-02 | Phase 11 | Pending |
 | PWA-03 | Phase 11 | Pending |
