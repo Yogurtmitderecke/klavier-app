@@ -37,7 +37,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Wird die Seite ohne HTTPS geöffnet, erscheint eine verständliche deutsche Meldung, warum das Mikrofon dann nicht geht.
   4. In der App ist eine Versionsnummer sichtbar; nach einer Änderung zeigt das iPad die neue Nummer.
   5. Am Klavier testen: iPad auf den Notenständer stellen, Adresse öffnen, auf „Start“ tippen – Text ist aus Spielposition gut lesbar.
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Walking skeleton: scaffold, test infra, branch main, German welcome -> Start -> overview (Zustand, UI-SPEC tokens)
+- [ ] 01-02-PLAN.md — Build version label top-right + own icon (DEPL-03, UI-03)
+- [ ] 01-03-PLAN.md — GitHub Pages deploy via Actions, GitHub setup checkpoint, first live HTTPS deploy (DEPL-01)
+- [ ] 01-04-PLAN.md — Overview tiles, Mikrofon-Test placeholder with Zurück, no-HTTPS warning (DEPL-02, D-04..D-07)
+- [ ] 01-05-PLAN.md — Release 0.2.0 and device/piano test on the iPad, record iPadOS version
 **UI hint**: yes
 
 ### Phase 2: Mikrofon-Testseite
@@ -186,7 +193,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Grundgerüst und Online-Adresse | 0/TBD | Not started | - |
+| 1. Grundgerüst und Online-Adresse | 0/5 | Not started | - |
 | 2. Mikrofon-Testseite | 0/TBD | Not started | - |
 | 3. Kalibrierung | 0/TBD | Not started | - |
 | 4. Anschlag-Erkennung | 0/TBD | Not started | - |
