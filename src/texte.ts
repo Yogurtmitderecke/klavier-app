@@ -25,4 +25,10 @@ export const TEXTE = {
     kommtBald: 'kommt bald',
     kommtBaldHinweis: 'Dieser Bereich kommt bald.',
   },
+  // Zurück-Knopf aller Unterseiten (D-06): U+2039 + Leerzeichen + „Zurück“.
+  zurueck: '‹ Zurück',
+  mikrofonPlatzhalter: {
+    titel: 'Mikrofon-Test',
+    text: 'Hier entsteht als Nächstes der Mikrofon-Test. Das Mikrofon ist noch nicht eingeschaltet. Tippe auf „Zurück“, um zur Übersicht zu gelangen.',
+  },
 } as const
