@@ -82,7 +82,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Mic an/aus: Mikrofon-Test page, one-tap start (AudioContext resumed in the tap, voice filters off), Stop/Zurück release the mic (MIC-01)
+- [x] 02-01-PLAN.md — Mic an/aus: Mikrofon-Test page, one-tap start (AudioContext resumed in the tap, voice filters off), Stop/Zurück release the mic (MIC-01)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -266,7 +266,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Grundgerüst und Online-Adresse | 5/5 | Complete   | 2026-11-23 |
-| 2. Mikrofon-Testseite | 0/6 | Not started | - |
+| 2. Mikrofon-Testseite | 1/6 | In Progress|  |
 | 3. Kalibrierung | 0/TBD | Not started | - |
 | 4. Anschlag-Erkennung | 0/TBD | Not started | - |
 | 5. Erstes Stück (Für Elise) | 0/TBD | Not started | - |
