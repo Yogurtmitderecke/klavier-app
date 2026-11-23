@@ -16,4 +16,26 @@ export interface PitchSource {
   kontextStatus(): KontextStatus | null
   /** false ohne HTTPS oder ohne getUserMedia – dann kann das Mikrofon gar nicht starten. */
   zugangMoeglich(): boolean
+  /** Diagnose-Schnappschuss; Gerätewerte des letzten Laufs bleiben nach stop() stehen. */
+  diagnose(): QuellenDiagnose
+  /** Rückruf bei Spur- oder Kontext-Ereignissen (stumm, beendet, statechange); null meldet ab. */
+  beiAenderung(cb: (() => void) | null): void
+}
+
+// Was das Gerät der App wirklich geliefert hat (MIC-04).
+// null = Mikrofon lief noch nie; undefined = vom Browser nicht gemeldet (Safari, Pitfall 2).
+export interface QuellenDiagnose {
+  kontextStatus: KontextStatus | null
+  abtastrateApp: number | null
+  abtastrateMikro: number | undefined | null
+  echo: boolean | undefined | null
+  rausch: boolean | undefined | null
+  autoPegel: boolean | undefined | null
+  // Filter (echoCancellation/noiseSuppression/autoGainControl), die getSupportedConstraints() meldet.
+  einstellbar: string[] | null
+  mikrofonName: string | null
+  spur: 'aktiv' | 'stumm' | 'beendet' | null
+  audioSitzung: string | null
+  // zeit als 'HH:MM:SS' (de-DE).
+  letztesEreignis: { zeit: string; text: string } | null
 }

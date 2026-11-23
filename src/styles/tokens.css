@@ -756,3 +756,62 @@ h1:focus {
     transition: none;
   }
 }
+
+/* Diagnose-Tafel (MIC-04): breit neben den Messwerten, schmal darunter. Nie fixed/sticky –
+   die freie Zone unten (96px aus .app) bleibt erhalten. */
+.diagnose {
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  border-radius: 16px;
+  background: var(--color-surface);
+}
+
+.diagnose h2 {
+  margin: 0 0 var(--space-md);
+  font-size: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.diagnose-liste {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: var(--space-md);
+  row-gap: var(--space-xs);
+  margin: 0;
+  font-size: var(--font-label);
+  line-height: 1.4;
+}
+
+/* Die Zeilen-Hülle nimmt nicht am Grid teil: dt und dd sind direkte Grid-Zellen. */
+.diagnose-zeile {
+  display: contents;
+}
+
+.diagnose-liste dt {
+  color: var(--color-text-secondary);
+}
+
+.diagnose-liste dd {
+  margin: 0;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.diagnose-liste dd.diag-problem {
+  color: var(--color-warning-text);
+}
+
+@media (min-width: 1100px) {
+  .mic-test {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    column-gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .mic-test .diagnose {
+    margin-top: 0;
+  }
+}

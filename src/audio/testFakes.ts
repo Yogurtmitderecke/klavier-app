@@ -18,16 +18,40 @@ export function erstelleFakeAudio(optionen: FakeAudioOptionen = {}) {
   const protokoll: string[] = []
   let signal: Float32Array = new Float32Array(0)
 
+  // Registrierte Ereignis-Hörer, damit Tests 'mute'/'unmute'/'ended'/'statechange' auslösen können.
+  type Hoerer = Map<string, Set<() => void>>
+  function hoererListe(hoerer: Hoerer) {
+    return {
+      add: vi.fn((typ: string, cb: () => void) => {
+        let set = hoerer.get(typ)
+        if (set === undefined) {
+          set = new Set()
+          hoerer.set(typ, set)
+        }
+        set.add(cb)
+      }),
+      remove: vi.fn((typ: string, cb: () => void) => {
+        hoerer.get(typ)?.delete(cb)
+      }),
+      ausloesen(typ: string) {
+        for (const cb of Array.from(hoerer.get(typ) ?? [])) cb()
+      },
+      anzahl: () => Array.from(hoerer.values()).reduce((n, s) => n + s.size, 0),
+    }
+  }
+  const spurHoerer = hoererListe(new Map())
+  const ctxHoerer = hoererListe(new Map())
+
   const track = {
     stop: vi.fn(() => {
       protokoll.push('track-stop')
     }),
     getSettings: () => ({ echoCancellation: false, sampleRate: 48000 }),
     label: 'iPad Mikrofon',
-    readyState: 'live',
+    readyState: 'live' as MediaStreamTrackState,
     muted: false,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
+    addEventListener: spurHoerer.add,
+    removeEventListener: spurHoerer.remove,
   }
   const stream = {
     getTracks: () => [track],
@@ -66,6 +90,8 @@ export function erstelleFakeAudio(optionen: FakeAudioOptionen = {}) {
     createMediaStreamSource = vi.fn(() => quellKnoten)
     createAnalyser = vi.fn(() => analyser)
     createGain = vi.fn(() => gain)
+    addEventListener = ctxHoerer.add
+    removeEventListener = ctxHoerer.remove
   }
   const ctx = new FakeCtx()
 
@@ -86,6 +112,8 @@ export function erstelleFakeAudio(optionen: FakeAudioOptionen = {}) {
         return stream
       })
     }),
+    // Wie Safari: nur der Echo-Filter gilt als einstellbar.
+    getSupportedConstraints: () => ({ echoCancellation: true, sampleRate: true }),
   }
 
   const quelle = new AnalyserPitchSource({
@@ -93,6 +121,8 @@ export function erstelleFakeAudio(optionen: FakeAudioOptionen = {}) {
       ? undefined
       : (mediaDevices as unknown as Pick<MediaDevices, 'getUserMedia'>),
     holeKontext: () => ctx as unknown as AudioContext,
+    // Keine echte navigator.audioSession in jsdom.
+    audioSitzung: () => null,
   })
 
   return {
@@ -111,6 +141,20 @@ export function erstelleFakeAudio(optionen: FakeAudioOptionen = {}) {
     loeseGum() {
       loeseGumIntern?.()
     },
+    // Spur-Ereignis auslösen ('mute', 'unmute', 'ended').
+    spurEreignis(typ: 'mute' | 'unmute' | 'ended') {
+      if (typ === 'mute') track.muted = true
+      if (typ === 'unmute') track.muted = false
+      if (typ === 'ended') track.readyState = 'ended'
+      spurHoerer.ausloesen(typ)
+    },
+    // Kontext-Zustand ändern und 'statechange' auslösen.
+    kontextEreignis(state: AudioContextState) {
+      ctx.state = state
+      ctxHoerer.ausloesen('statechange')
+    },
+    // Anzahl noch registrierter Spur- und Kontext-Hörer (0 nach stop()).
+    hoererAnzahl: () => spurHoerer.anzahl() + ctxHoerer.anzahl(),
   }
 }
 

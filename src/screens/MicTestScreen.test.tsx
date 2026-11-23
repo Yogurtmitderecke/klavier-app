@@ -4,6 +4,7 @@ import { MicTestScreen } from './MicTestScreen'
 import { erstelleMicController, setzeMicController } from '../audio/micController'
 import { erstelleFakeAudio, erstelleFakeRaf } from '../audio/testFakes'
 import { sinus } from '../audio/testSignale'
+import { VERSION_LABEL } from '../config'
 import { useAppStore } from '../state/appStore'
 import { MIC_START_ZUSTAND, useMicStore } from '../state/micStore'
 
@@ -304,5 +305,51 @@ describe('MicTestScreen – Fehler, ohne HTTPS und Hintergrund (MIC-01)', () => 
 
     const hinweis = screen.getByRole('status')
     expect(hinweis.textContent).toContain('Das Mikrofon liefert keine Daten.')
+  })
+})
+
+describe('MicTestScreen – Diagnose (MIC-04)', () => {
+  let fake: ReturnType<typeof erstelleFakeAudio>
+  let uhr: ReturnType<typeof erstelleFakeRaf>
+
+  beforeEach(() => {
+    fake = erstelleFakeAudio()
+    uhr = erstelleFakeRaf()
+    setzeMicController(
+      erstelleMicController({ quelle: fake.quelle, raf: uhr.raf, caf: uhr.caf, jetzt: uhr.jetzt }),
+    )
+    useAppStore.setState({ screen: 'mic-test' })
+    useMicStore.setState({ ...MIC_START_ZUSTAND })
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  function diagnoseTafel(): HTMLElement {
+    return screen.getByRole('region', { name: 'Diagnose' })
+  }
+
+  it('zeigt die Diagnose schon vor dem Start mit Startart und App-Version', () => {
+    render(<MicTestScreen />)
+    const tafel = diagnoseTafel()
+    expect(tafel.textContent).toContain('Diagnose')
+    expect(tafel.textContent).toContain('Safari-Tab')
+    expect(tafel.textContent).toContain(VERSION_LABEL)
+  })
+
+  it('zeigt nach dem Start Filter und Abtastrate', async () => {
+    fake.setzeSignal(sinus(440, 4096, 48000, 0.2))
+    render(<MicTestScreen />)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Mikrofon starten' }))
+    })
+    act(() => {
+      uhr.schritt(10)
+    })
+    const text = diagnoseTafel().textContent ?? ''
+    expect(text).toContain('aus ✓')
+    expect(text).toContain('nicht gemeldet')
+    expect(text).toContain('48.000 Hz')
   })
 })

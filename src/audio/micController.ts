@@ -6,6 +6,8 @@ import { internationalName, midiToNote } from './noteMath'
 import { analysiereFrame, erstelleDetektor, type FrameAnalyse } from './pitchAnalysis'
 import type { PitchSource } from './pitchSource'
 import { PitchSmoother, type GeglaetteteAnzeige } from './smoothing'
+import { VERSION_LABEL } from '../config'
+import { ermittleStartart } from '../lib/startart'
 import {
   MIC_START_ZUSTAND,
   useMicStore,
@@ -68,6 +70,36 @@ export function erstelleMicController({
   let letzteGueltigeHz: number | null = null
   // Seit wann alle Samples exakt 0 sind (null = es kommt Signal).
   let nullSeit: number | null = null
+  // Analyse-Rate für die Diagnose: Frames im laufenden 1-Sekunden-Fenster.
+  let analysenImFenster = 0
+  let fensterStart = 0
+  let analysenProSek: number | null = null
+  let analyseMs: number | null = null
+
+  // Schreibt den Diagnose-Schnappschuss in den Store – höchstens einmal pro Sekunde
+  // aus der Schleife, sonst nur bei Start, Stopp, Fehler und Geräte-Ereignissen (T-02-17).
+  function veroeffentlicheDiagnose(): void {
+    const s = useMicStore.getState()
+    useMicStore.setState({
+      diagnose: {
+        ...quelle.diagnose(),
+        startart: ermittleStartart(),
+        appVersion: VERSION_LABEL,
+        fensterGroesse: FFT_SIZE,
+        analysenProSek,
+        analyseMs,
+        fehlerDetails: s.fehlerDetails,
+        mikLaeuft: s.status === 'laeuft',
+      },
+    })
+  }
+
+  function setzeAnalyseRateZurueck(): void {
+    analysenImFenster = 0
+    fensterStart = jetzt()
+    analysenProSek = null
+    analyseMs = null
+  }
 
   // Baut die Live-Werte: Note aus der Glättung, Pegel und Klarheit roh.
   function liveWerte(g: GeglaetteteAnzeige, a: FrameAnalyse): LiveWerte {
@@ -118,6 +150,14 @@ export function erstelleMicController({
       letzteVeroeffentlichung = t
       useMicStore.setState({ live: liveWerte(g, a) })
     }
+    analysenImFenster++
+    analyseMs = a.dauerMs
+    if (t - fensterStart >= 1000) {
+      analysenProSek = Math.round((analysenImFenster * 1000) / (t - fensterStart))
+      analysenImFenster = 0
+      fensterStart = t
+      veroeffentlicheDiagnose()
+    }
     wartenderFrame = raf(() => frame(meineNummer))
   }
 
@@ -138,6 +178,10 @@ export function erstelleMicController({
         letzteVeroeffentlichung = -Infinity
         smoother.reset()
         letzteGueltigeHz = null
+        setzeAnalyseRateZurueck()
+        // Spur stumm/beendet oder Audio-Status-Wechsel sofort zeigen, nicht erst nach 1 s.
+        quelle.beiAenderung(veroeffentlicheDiagnose)
+        veroeffentlicheDiagnose()
         wartenderFrame = raf(() => frame(meineNummer))
       }
     } catch (fehler) {
@@ -152,14 +196,17 @@ export function erstelleMicController({
             fehlerDetails: fehlerText(fehler),
           })
         }
+        veroeffentlicheDiagnose()
       }
     }
   }
 
   function pruefeZugang(): boolean {
-    if (quelle.zugangMoeglich()) return true
-    useMicStore.setState({ status: 'unsicher' })
-    return false
+    const moeglich = quelle.zugangMoeglich()
+    if (!moeglich) useMicStore.setState({ status: 'unsicher' })
+    // Startart und App-Version stehen schon vor dem Start in der Diagnose.
+    veroeffentlicheDiagnose()
+    return moeglich
   }
 
   function stop(grund: StopGrund): void {
@@ -168,10 +215,12 @@ export function erstelleMicController({
       caf(wartenderFrame)
       wartenderFrame = null
     }
+    quelle.beiAenderung(null)
     quelle.stop()
     smoother.reset()
     letzteGueltigeHz = null
     nullSeit = null
+    setzeAnalyseRateZurueck()
     const status = grund === 'nutzer' ? 'gestoppt' : grund === 'verlassen' ? 'idle' : 'hintergrund'
     useMicStore.setState({
       status,
@@ -180,6 +229,7 @@ export function erstelleMicController({
       hinweis: null,
       live: MIC_START_ZUSTAND.live,
     })
+    veroeffentlicheDiagnose()
   }
 
   return { start, stop, pruefeZugang }

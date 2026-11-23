@@ -1,5 +1,8 @@
 import { create } from 'zustand'
+import type { Diagnose } from '../audio/diagnoseZeilen'
+import { FFT_SIZE } from '../audio/einstellungen'
 import type { MicFehlerArt } from '../audio/micErrors'
+import { VERSION_LABEL } from '../config'
 
 // Nicht-fatale Hinweise während das Mikrofon läuft (höchstens einer zugleich).
 export type MicHinweisArt = 'keinSignal' | 'angehalten'
@@ -40,6 +43,30 @@ interface MicState {
   // Aktiver Hinweis (Vorrang: keinSignal vor angehalten), sonst null.
   hinweis: MicHinweisArt | null
   live: LiveWerte
+  // Diagnose-Tafel (MIC-04): höchstens einmal pro Sekunde plus bei Ereignissen aktualisiert.
+  diagnose: Diagnose
+}
+
+// Vor dem ersten Start: nur Startart, Version und Fenstergröße sind bekannt.
+export const LEERE_DIAGNOSE: Diagnose = {
+  kontextStatus: null,
+  abtastrateApp: null,
+  abtastrateMikro: null,
+  echo: null,
+  rausch: null,
+  autoPegel: null,
+  einstellbar: null,
+  mikrofonName: null,
+  spur: null,
+  audioSitzung: null,
+  letztesEreignis: null,
+  startart: 'safari',
+  appVersion: VERSION_LABEL,
+  fensterGroesse: FFT_SIZE,
+  analysenProSek: null,
+  analyseMs: null,
+  fehlerDetails: null,
+  mikLaeuft: false,
 }
 
 const LEERE_LIVE_WERTE: LiveWerte = {
@@ -58,6 +85,7 @@ export const MIC_START_ZUSTAND: MicState = {
   fehlerArt: null,
   hinweis: null,
   live: LEERE_LIVE_WERTE,
+  diagnose: LEERE_DIAGNOSE,
 }
 
 export const useMicStore = create<MicState>()(() => ({ ...MIC_START_ZUSTAND }))
