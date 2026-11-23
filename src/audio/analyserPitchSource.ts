@@ -1,5 +1,6 @@
 import { holeAudioKontext } from './audioKontext'
 import { FFT_SIZE } from './einstellungen'
+import { isInsecureContext } from '../lib/secureContext'
 import type { KontextStatus, PitchSource } from './pitchSource'
 
 export interface AnalyserPitchSourceOptionen {
@@ -7,6 +8,8 @@ export interface AnalyserPitchSourceOptionen {
   mediaDevices?: Pick<MediaDevices, 'getUserMedia'>
   // Standard: der gemeinsame AudioContext der App.
   holeKontext?: () => AudioContext
+  // Standard: sicher, solange window.isSecureContext nicht ausdrücklich false ist.
+  isSecureContext?: () => boolean
 }
 
 // Aufnahme: getUserMedia → MediaStreamSource → AnalyserNode(FFT_SIZE) → Gain(0) → destination.
@@ -14,6 +17,7 @@ export interface AnalyserPitchSourceOptionen {
 export class AnalyserPitchSource implements PitchSource {
   private readonly mediaDevicesOption: Pick<MediaDevices, 'getUserMedia'> | undefined
   private readonly holeKontext: () => AudioContext
+  private readonly istSicher: () => boolean
   private ctx: AudioContext | null = null
   private stream: MediaStream | null = null
   private quelle: MediaStreamAudioSourceNode | null = null
@@ -25,6 +29,16 @@ export class AnalyserPitchSource implements PitchSource {
   constructor(optionen: AnalyserPitchSourceOptionen = {}) {
     this.mediaDevicesOption = optionen.mediaDevices
     this.holeKontext = optionen.holeKontext ?? (() => holeAudioKontext())
+    this.istSicher = optionen.isSecureContext ?? (() => !isInsecureContext())
+  }
+
+  // Option oder navigator.mediaDevices – jsdom und unsichere Seiten haben keins.
+  private mediaDevices(): Pick<MediaDevices, 'getUserMedia'> | undefined {
+    return this.mediaDevicesOption ?? globalThis.navigator?.mediaDevices
+  }
+
+  zugangMoeglich(): boolean {
+    return this.istSicher() && typeof this.mediaDevices()?.getUserMedia === 'function'
   }
 
   get sampleRate(): number {
@@ -36,13 +50,20 @@ export class AnalyserPitchSource implements PitchSource {
   }
 
   async start(): Promise<void> {
+    // Ohne HTTPS oder getUserMedia gar nicht erst anfangen – auch keinen Kontext anlegen.
+    if (!this.zugangMoeglich()) {
+      const fehler = new Error('Kein sicherer Zugang zum Mikrofon (HTTPS/getUserMedia fehlt).')
+      fehler.name = 'UnsicherError'
+      throw fehler
+    }
     const meineNummer = ++this.startNummer
     const ctx = this.holeKontext()
     this.ctx = ctx
     // iOS: resume() muss synchron in der Tipp-Geste laufen – also VOR jedem await (D-01).
     const fortgesetzt = ctx.resume()
 
-    const mediaDevices = this.mediaDevicesOption ?? navigator.mediaDevices
+    // zugangMoeglich() hat oben bereits geprüft, dass es existiert.
+    const mediaDevices = this.mediaDevices() as Pick<MediaDevices, 'getUserMedia'>
     // Sprachverarbeitung ausdrücklich aus: sie dämpft und „pumpt“ Klaviertöne (MIC-01).
     const stream = await mediaDevices.getUserMedia({
       audio: {

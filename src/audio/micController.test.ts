@@ -220,3 +220,120 @@ describe('micController – geglättete Anzeige und Messwerte (MIC-03, MIC-05)',
     expect(typeof live.klarheit).toBe('number')
   })
 })
+
+describe('micController – Fehlerarten, Hinweise und Wiederholen (MIC-01)', () => {
+  beforeEach(() => {
+    useMicStore.setState({ ...MIC_START_ZUSTAND })
+  })
+
+  async function starteMitFehler(fehler: DOMException) {
+    const fake = erstelleFakeAudio()
+    fake.mediaDevices.getUserMedia.mockRejectedValueOnce(fehler)
+    const controller = erstelleMicController({ quelle: fake.quelle })
+    await controller.start()
+    return { fake, controller }
+  }
+
+  it('ordnet eine verweigerte Erlaubnis als „verweigert“ ein', async () => {
+    await starteMitFehler(new DOMException('denied', 'NotAllowedError'))
+    const s = useMicStore.getState()
+    expect(s.status).toBe('fehler')
+    expect(s.fehlerArt).toBe('verweigert')
+    expect(s.fehlerDetails).toBe('NotAllowedError: denied')
+  })
+
+  it('ordnet ein belegtes Mikrofon als „belegt“ ein', async () => {
+    await starteMitFehler(new DOMException('busy', 'NotReadableError'))
+    expect(useMicStore.getState().status).toBe('fehler')
+    expect(useMicStore.getState().fehlerArt).toBe('belegt')
+  })
+
+  it('ordnet ein fehlendes Mikrofon als „keinMikrofon“ ein', async () => {
+    await starteMitFehler(new DOMException('none', 'NotFoundError'))
+    expect(useMicStore.getState().status).toBe('fehler')
+    expect(useMicStore.getState().fehlerArt).toBe('keinMikrofon')
+  })
+
+  it('meldet ohne mediaDevices „unsicher“ – schon beim Prüfen und auch beim Start, ohne getUserMedia', async () => {
+    const fake = erstelleFakeAudio({ ohneMediaDevices: true })
+    const controller = erstelleMicController({ quelle: fake.quelle })
+
+    expect(controller.pruefeZugang()).toBe(false)
+    expect(useMicStore.getState().status).toBe('unsicher')
+
+    useMicStore.setState({ ...MIC_START_ZUSTAND })
+    await controller.start()
+
+    expect(useMicStore.getState().status).toBe('unsicher')
+    expect(fake.mediaDevices.getUserMedia).not.toHaveBeenCalled()
+    expect(fake.ctx.resume).not.toHaveBeenCalled()
+  })
+
+  it('meldet bei vorhandenem Zugang pruefeZugang() true und lässt den Status unverändert', () => {
+    const fake = erstelleFakeAudio()
+    const controller = erstelleMicController({ quelle: fake.quelle })
+    expect(controller.pruefeZugang()).toBe(true)
+    expect(useMicStore.getState().status).toBe('idle')
+  })
+
+  it('zeigt den Hinweis „keinSignal“ nach über 1,5 s exakter Stille und nimmt ihn bei Signal zurück', async () => {
+    const fake = erstelleFakeAudio()
+    const uhr = erstelleFakeRaf()
+    fake.setzeSignal(stille(4096))
+    const controller = erstelleMicController({
+      quelle: fake.quelle,
+      raf: uhr.raf,
+      caf: uhr.caf,
+      jetzt: uhr.jetzt,
+    })
+    await controller.start()
+
+    uhr.schritt(Math.ceil(1000 / 16.7))
+    expect(useMicStore.getState().hinweis).toBeNull()
+
+    uhr.schritt(Math.ceil(600 / 16.7))
+    expect(useMicStore.getState().hinweis).toBe('keinSignal')
+
+    fake.setzeSignal(sinus(440, 4096, 48000))
+    uhr.schritt(2)
+    expect(useMicStore.getState().hinweis).toBeNull()
+  })
+
+  it('zeigt den Hinweis „angehalten“, wenn der Kontext nach dem zweiten resume() nicht läuft', async () => {
+    const fake = erstelleFakeAudio({ resumeHaengt: true })
+    const uhr = erstelleFakeRaf()
+    fake.setzeSignal(sinus(440, 4096, 48000))
+    const controller = erstelleMicController({
+      quelle: fake.quelle,
+      raf: uhr.raf,
+      caf: uhr.caf,
+      jetzt: uhr.jetzt,
+    })
+
+    await controller.start()
+
+    expect(fake.ctx.resume).toHaveBeenCalledTimes(2)
+    expect(useMicStore.getState().status).toBe('laeuft')
+    expect(useMicStore.getState().hinweis).toBe('angehalten')
+
+    fake.ctx.state = 'running'
+    uhr.schritt(1)
+    expect(useMicStore.getState().hinweis).toBeNull()
+  })
+
+  it('startet nach einem Fehler beim zweiten Versuch und räumt Fehler und Hinweis auf', async () => {
+    const { fake, controller } = await starteMitFehler(
+      new DOMException('denied', 'NotAllowedError'),
+    )
+    useMicStore.setState({ hinweis: 'angehalten' })
+
+    await controller.start()
+
+    const s = useMicStore.getState()
+    expect(s.status).toBe('laeuft')
+    expect(s.fehlerArt).toBeNull()
+    expect(s.fehlerDetails).toBeNull()
+    expect(s.hinweis).toBeNull()
+    expect(fake.mediaDevices.getUserMedia).toHaveBeenCalledTimes(2)
+  })
+})

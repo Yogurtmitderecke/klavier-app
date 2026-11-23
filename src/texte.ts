@@ -51,6 +51,63 @@ export const TEXTE = {
       fehler: 'Das Mikrofon konnte nicht starten.',
       unsicher: 'Ohne HTTPS geht das Mikrofon nicht.',
     },
+    // Nicht-fatale Hinweise (MicHinweis), höchstens einer zugleich.
+    hinweis: {
+      keinSignal: {
+        titel: 'Das Mikrofon liefert keine Daten.',
+        text: 'Trenne Kopfhörer oder AirPods vom iPad. Tippe dann auf „Mikrofon stoppen“ und wieder auf „Mikrofon starten“.',
+      },
+      angehalten: {
+        titel: 'Der Ton-Empfang ist noch angehalten.',
+        text: 'Tippe auf „Mikrofon stoppen“ und dann noch einmal auf „Mikrofon starten“.',
+      },
+    },
+    // Fehlerhilfe (MicFehler) je Fehlerart. Jeder Safari-Menüpfad ist ein eigener Text,
+    // damit er nach dem iPad-Test (Plan 06) einzeln korrigiert werden kann.
+    fehler: {
+      verweigert: {
+        titel: 'Die App darf das Mikrofon nicht benutzen.',
+        intro: 'Safari hat den Zugriff auf das Mikrofon blockiert. So erlaubst du ihn wieder:',
+        // Nur im Safari-Tab sinnvoll; beim Start vom Home-Bildschirm weggelassen.
+        schrittSafari:
+          'Tippe in Safari links in der Adressleiste auf das Seiten-Symbol, dann auf „Website-Einstellungen“. Stelle „Mikrofon“ auf „Erlauben“ oder „Fragen“.',
+        schritte: [
+          'Oder öffne die iPad-Einstellungen → Apps → Safari → Mikrofon und wähle „Fragen“ oder „Erlauben“.',
+          'Tippe danach hier oben auf „Nochmal versuchen“.',
+          // iOS 26.5.2: Safari meldet NotAllowedError, bis Safari bzw. das iPad neu startet.
+          'Klappt es immer noch nicht: Schließe Safari ganz – im App-Umschalter nach oben wegwischen – und öffne die App neu. Hilft auch das nicht, starte das iPad neu.',
+        ],
+      },
+      keinMikrofon: {
+        titel: 'Es wurde kein Mikrofon gefunden.',
+        intro: 'Das iPad meldet kein Mikrofon, das die App benutzen kann.',
+        schritte: [
+          'Trenne Kopfhörer, AirPods oder ein externes Mikrofon vom iPad.',
+          'Tippe hier oben auf „Nochmal versuchen“.',
+          'Klappt es immer noch nicht: Schließe Safari ganz und öffne die App neu.',
+        ],
+      },
+      belegt: {
+        titel: 'Das Mikrofon ist gerade belegt.',
+        intro:
+          'Eine andere App benutzt das Mikrofon – zum Beispiel ein Telefonat, FaceTime oder Sprachmemos.',
+        schritte: [
+          'Beende das Telefonat oder schließe die andere App.',
+          'Tippe hier oben auf „Nochmal versuchen“.',
+          'Klappt es immer noch nicht: Schließe Safari ganz – im App-Umschalter nach oben wegwischen – und öffne die App neu.',
+        ],
+      },
+      unbekannt: {
+        titel: 'Das Mikrofon ließ sich nicht starten.',
+        intro:
+          'Es ist ein unerwarteter Fehler aufgetreten. Die genaue Meldung steht in der Diagnose unter „Fehlerdetails“.',
+        schritte: [
+          'Tippe hier oben auf „Nochmal versuchen“.',
+          'Klappt es nicht: Schließe Safari ganz und öffne die App neu. Hilft auch das nicht, starte das iPad neu.',
+          'Mach ein Bildschirmfoto dieser Seite – die Diagnose hilft bei der Fehlersuche.',
+        ],
+      },
+    },
     // Messkarte: gehörter Ton mit Cent, Hz und internationalem Namen.
     messkarte: {
       abschnitt: 'Gehörter Ton',

@@ -7,6 +7,10 @@ import { AnalyserPitchSource } from './analyserPitchSource'
 export interface FakeAudioOptionen {
   // getUserMedia bleibt hängen, bis loeseGum() aufgerufen wird (Erlaubnis-Abfrage offen).
   gumHaengt?: boolean
+  // Quelle ohne mediaDevices (wie jsdom oder ein Browser ohne getUserMedia).
+  ohneMediaDevices?: boolean
+  // resume() löst auf, der Kontext bleibt aber 'suspended' (iOS hält den Ton-Empfang an).
+  resumeHaengt?: boolean
 }
 
 export function erstelleFakeAudio(optionen: FakeAudioOptionen = {}) {
@@ -48,7 +52,7 @@ export function erstelleFakeAudio(optionen: FakeAudioOptionen = {}) {
     destination = {}
     resume = vi.fn(async () => {
       protokoll.push('resume')
-      this.state = 'running'
+      if (!optionen.resumeHaengt) this.state = 'running'
     })
     suspend = vi.fn(async () => {
       protokoll.push('suspend')
@@ -85,7 +89,9 @@ export function erstelleFakeAudio(optionen: FakeAudioOptionen = {}) {
   }
 
   const quelle = new AnalyserPitchSource({
-    mediaDevices: mediaDevices as unknown as Pick<MediaDevices, 'getUserMedia'>,
+    mediaDevices: optionen.ohneMediaDevices
+      ? undefined
+      : (mediaDevices as unknown as Pick<MediaDevices, 'getUserMedia'>),
     holeKontext: () => ctx as unknown as AudioContext,
   })
 

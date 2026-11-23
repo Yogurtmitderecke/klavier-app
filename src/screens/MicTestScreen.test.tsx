@@ -187,3 +187,122 @@ describe('MicTestScreen – Pegel, Erkennungssicherheit und Stimmgerät (MIC-03,
     expect(text).not.toMatch(/Timer|Kopieren|Checkliste/)
   })
 })
+
+describe('MicTestScreen – Fehler, ohne HTTPS und Hintergrund (MIC-01)', () => {
+  let fake: ReturnType<typeof erstelleFakeAudio>
+  let uhr: ReturnType<typeof erstelleFakeRaf>
+  const secureUrspruenglich = Object.getOwnPropertyDescriptor(window, 'isSecureContext')
+
+  beforeEach(() => {
+    fake = erstelleFakeAudio()
+    uhr = erstelleFakeRaf()
+    setzeMicController(
+      erstelleMicController({ quelle: fake.quelle, raf: uhr.raf, caf: uhr.caf, jetzt: uhr.jetzt }),
+    )
+    useAppStore.setState({ screen: 'mic-test' })
+    useMicStore.setState({ ...MIC_START_ZUSTAND })
+  })
+
+  afterEach(() => {
+    cleanup()
+    if (secureUrspruenglich) {
+      Object.defineProperty(window, 'isSecureContext', secureUrspruenglich)
+    } else {
+      delete (window as { isSecureContext?: boolean }).isSecureContext
+    }
+    delete (navigator as { standalone?: boolean }).standalone
+    delete (document as { visibilityState?: string }).visibilityState
+  })
+
+  async function starteMitVerweigerung() {
+    fake.mediaDevices.getUserMedia.mockRejectedValueOnce(
+      new DOMException('denied', 'NotAllowedError'),
+    )
+    render(<MicTestScreen />)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Mikrofon starten' }))
+    })
+  }
+
+  it('zeigt bei verweigerter Erlaubnis eine Hilfe mit Schritten und „Nochmal versuchen“', async () => {
+    const hrefVorher = window.location.href
+    await starteMitVerweigerung()
+
+    const box = screen.getByRole('alert')
+    expect(box.textContent).toContain('Die App darf das Mikrofon nicht benutzen.')
+    const liste = box.querySelector('ol')
+    expect(liste).not.toBeNull()
+    expect(liste?.textContent).toContain('Website-Einstellungen')
+    expect(liste?.textContent).toContain('starte das iPad neu')
+    expect(box.querySelector('button')).toBeNull()
+    expect(screen.getByRole('button', { name: 'Nochmal versuchen' })).toBeTruthy()
+    expect(screen.queryByRole('region', { name: 'Gehörter Ton' })).toBeNull()
+    expect(window.location.href).toBe(hrefVorher)
+  })
+
+  it('lässt den Safari-Schritt weg, wenn die App vom Home-Bildschirm gestartet wurde', async () => {
+    Object.defineProperty(navigator, 'standalone', { value: true, configurable: true })
+    await starteMitVerweigerung()
+
+    const liste = screen.getByRole('alert').querySelector('ol')
+    expect(liste?.textContent).not.toContain('Website-Einstellungen')
+    expect(liste?.textContent).toContain('starte das iPad neu')
+  })
+
+  it('zeigt ohne HTTPS die Warnung, keinen Start-Knopf und den passenden Status', () => {
+    Object.defineProperty(window, 'isSecureContext', { value: false, configurable: true })
+    render(<MicTestScreen />)
+
+    expect(document.body.textContent).toContain('Achtung: Diese Seite ist nicht sicher verbunden.')
+    expect(screen.queryByRole('button', { name: 'Mikrofon starten' })).toBeNull()
+    expect(document.querySelector('.mic-status')?.textContent).toBe(
+      'Ohne HTTPS geht das Mikrofon nicht.',
+    )
+    expect(fake.mediaDevices.getUserMedia).not.toHaveBeenCalled()
+  })
+
+  it('stoppt das Mikrofon, wenn die App in den Hintergrund geht', async () => {
+    render(<MicTestScreen />)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Mikrofon starten' }))
+    })
+    expect(fake.track.stop).not.toHaveBeenCalled()
+
+    Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true })
+    act(() => {
+      document.dispatchEvent(new Event('visibilitychange'))
+    })
+
+    expect(fake.track.stop).toHaveBeenCalled()
+    expect(document.querySelector('.mic-status')?.textContent).toBe(
+      'Mikrofon gestoppt, weil die App im Hintergrund war.',
+    )
+    expect(screen.getByRole('button', { name: 'Mikrofon starten' })).toBeTruthy()
+  })
+
+  it('stoppt das Mikrofon bei pagehide', async () => {
+    render(<MicTestScreen />)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Mikrofon starten' }))
+    })
+
+    act(() => {
+      window.dispatchEvent(new Event('pagehide'))
+    })
+
+    expect(fake.track.stop).toHaveBeenCalled()
+  })
+
+  it('zeigt den Hinweis „keine Daten“ bei anhaltender exakter Stille', async () => {
+    render(<MicTestScreen />)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Mikrofon starten' }))
+    })
+    act(() => {
+      uhr.schritt(100)
+    })
+
+    const hinweis = screen.getByRole('status')
+    expect(hinweis.textContent).toContain('Das Mikrofon liefert keine Daten.')
+  })
+})
