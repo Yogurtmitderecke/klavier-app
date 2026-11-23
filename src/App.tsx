@@ -1,5 +1,5 @@
 import { useAppStore } from './state/appStore'
-import { MicPlaceholderScreen } from './screens/MicPlaceholderScreen'
+import { MicTestScreen } from './screens/MicTestScreen'
 import { OverviewScreen } from './screens/OverviewScreen'
 import { WelcomeScreen } from './screens/WelcomeScreen'
 
@@ -11,7 +11,7 @@ function App() {
     <main className="app">
       {screen === 'welcome' && <WelcomeScreen />}
       {screen === 'overview' && <OverviewScreen />}
-      {screen === 'mic-placeholder' && <MicPlaceholderScreen />}
+      {screen === 'mic-test' && <MicTestScreen />}
     </main>
   )
 }

@@ -349,6 +349,111 @@ h1:focus {
   line-height: 1.5;
 }
 
+/* Mikrofon-Test (Phase 2): linke Spalte mit Kopfzeile und Steuerzeile. */
+.mic-test-links {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Steuerzeile: Knopf links, Statustext 24px rechts daneben, vertikal zentriert. */
+.mic-steuerung {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+/* Mikrofon-Knopf: 96px hoch, mindestens 320px breit, Beschriftung bricht nie um. */
+.btn-mic {
+  height: 96px;
+  min-width: 320px;
+  padding: 0 var(--space-xl);
+  border: none;
+  border-radius: 16px;
+  font-size: var(--font-heading);
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 100ms ease-out, transform 100ms ease-out;
+}
+
+/* Akzent-Stil („Mikrofon starten“, „Nochmal versuchen“, „Startet …“) wie der Start-Knopf. */
+.btn-mic--akzent {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+
+.btn-mic--akzent:active {
+  background: var(--color-accent-pressed);
+  transform: scale(0.98);
+}
+
+.btn-mic--akzent:disabled {
+  background: var(--color-accent-pressed);
+  transform: none;
+  cursor: default;
+}
+
+/* Flächen-Stil („Mikrofon stoppen“) wie der Zurück-Knopf. */
+.btn-mic--flaeche {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.btn-mic--flaeche:active {
+  background: var(--color-surface-pressed);
+  transform: scale(0.98);
+}
+
+@media (hover: hover) {
+  .btn-mic--akzent:hover {
+    background: var(--color-accent-pressed);
+  }
+
+  .btn-mic--flaeche:hover {
+    background: var(--color-surface-pressed);
+  }
+}
+
+.btn-mic:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-mic {
+    transition: none;
+  }
+
+  .btn-mic--akzent:active,
+  .btn-mic--flaeche:active {
+    transform: none;
+  }
+}
+
+/* Statustext neben dem Knopf (Live-Region). */
+.mic-status {
+  margin: 0;
+  font-size: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+/* Schmale Fenster: Knopf und Statustext untereinander, Knopf volle Breite. */
+@media (max-width: 600px) {
+  .mic-steuerung {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+  }
+
+  .btn-mic {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
 /* Warnung ohne HTTPS (D-07): direkt über dem Start-Knopf, 24px Abstand. */
 .warning-bar {
   box-sizing: border-box;
