@@ -393,4 +393,4 @@ The user delegated these ("entscheide du") or did not discuss them:
 - [x] Dimension 5 Spacing: PASS
 - [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved 2026-11-23
