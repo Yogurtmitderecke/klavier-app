@@ -30,6 +30,8 @@
   --color-text-on-accent: #16181D;
   --color-warning: #E5604D;
   --color-warning-surface: #3A2220;
+  /* Warntext auf dunklem Grund (Diagnose-Problemwerte, ab Plan 05). */
+  --color-warning-text: #FF8A75;
   /* ±10-Cent-Band im Stimmgerät-Balken (bewusst neutral grau, kein Grün). */
   --color-meter-band: #4A4E58;
 }
@@ -495,6 +497,65 @@ h1:focus {
 .warning-bar-link:focus-visible {
   outline: 3px solid var(--color-accent);
   outline-offset: 4px;
+}
+
+/* Fehlerhilfe beim Mikrofon-Start (Phase 2): Kasten wie .warning-bar, volle Spaltenbreite. */
+.mic-fehler {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: var(--space-lg);
+  padding: var(--space-lg);
+  border-left: 4px solid var(--color-warning);
+  border-radius: 12px;
+  background: var(--color-warning-surface);
+  color: var(--color-text);
+  font-size: var(--font-body);
+  line-height: 1.5;
+  text-align: left;
+}
+
+.mic-fehler p {
+  margin: 0;
+}
+
+.mic-fehler-titel {
+  font-weight: 600;
+}
+
+.mic-fehler p.mic-fehler-titel {
+  margin: 0 0 var(--space-sm);
+}
+
+.mic-fehler ol {
+  padding-left: var(--space-xl);
+  margin: var(--space-md) 0 0;
+}
+
+.mic-fehler li + li {
+  margin-top: var(--space-sm);
+}
+
+/* Nicht-fataler Hinweis (Phase 2): gleicher Kasten, etwas kompakter. */
+.mic-hinweis {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  border-left: 4px solid var(--color-warning);
+  border-radius: 12px;
+  background: var(--color-warning-surface);
+  color: var(--color-text);
+  font-size: var(--font-body);
+  line-height: 1.5;
+  text-align: left;
+}
+
+.mic-hinweis p {
+  margin: 0;
+}
+
+.mic-hinweis strong {
+  font-weight: 600;
 }
 
 /* Messkarte (Phase 2): gehörter Ton groß, daneben Cent, Hz und internationaler Name. */

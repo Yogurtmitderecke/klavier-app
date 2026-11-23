@@ -14,4 +14,6 @@ export interface PitchSource {
   readonly sampleRate: number
   /** Aktueller Kontext-Zustand oder null, wenn noch kein Kontext existiert. */
   kontextStatus(): KontextStatus | null
+  /** false ohne HTTPS oder ohne getUserMedia – dann kann das Mikrofon gar nicht starten. */
+  zugangMoeglich(): boolean
 }

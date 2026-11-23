@@ -1,4 +1,8 @@
 import { create } from 'zustand'
+import type { MicFehlerArt } from '../audio/micErrors'
+
+// Nicht-fatale Hinweise während das Mikrofon läuft (höchstens einer zugleich).
+export type MicHinweisArt = 'keinSignal' | 'angehalten'
 
 // Zustände des Mikrofons für die Oberfläche. Nur einfache Daten –
 // niemals AudioContext- oder Stream-Objekte im Store.
@@ -31,6 +35,10 @@ interface MicState {
   status: MicStatus
   // Technische Fehlerangabe „Name: Nachricht“, sonst null.
   fehlerDetails: string | null
+  // Art des Start-Fehlers für die deutsche Hilfe, sonst null.
+  fehlerArt: MicFehlerArt | null
+  // Aktiver Hinweis (Vorrang: keinSignal vor angehalten), sonst null.
+  hinweis: MicHinweisArt | null
   live: LiveWerte
 }
 
@@ -47,6 +55,8 @@ const LEERE_LIVE_WERTE: LiveWerte = {
 export const MIC_START_ZUSTAND: MicState = {
   status: 'idle',
   fehlerDetails: null,
+  fehlerArt: null,
+  hinweis: null,
   live: LEERE_LIVE_WERTE,
 }
 

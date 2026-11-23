@@ -1,11 +1,17 @@
 import type { PitchDetector } from 'pitchy'
 import { AnalyserPitchSource } from './analyserPitchSource'
-import { FFT_SIZE, PUBLISH_HZ } from './einstellungen'
+import { FFT_SIZE, KEIN_SIGNAL_MS, PUBLISH_HZ } from './einstellungen'
+import { classifyMicError, fehlerText } from './micErrors'
 import { internationalName, midiToNote } from './noteMath'
 import { analysiereFrame, erstelleDetektor, type FrameAnalyse } from './pitchAnalysis'
 import type { PitchSource } from './pitchSource'
 import { PitchSmoother, type GeglaetteteAnzeige } from './smoothing'
-import { MIC_START_ZUSTAND, useMicStore, type LiveWerte } from '../state/micStore'
+import {
+  MIC_START_ZUSTAND,
+  useMicStore,
+  type LiveWerte,
+  type MicHinweisArt,
+} from '../state/micStore'
 
 // Warum gestoppt wird: Nutzer-Tipp, Seite verlassen oder App im Hintergrund.
 export type StopGrund = 'nutzer' | 'verlassen' | 'hintergrund'
@@ -13,6 +19,8 @@ export type StopGrund = 'nutzer' | 'verlassen' | 'hintergrund'
 export interface MicController {
   start(): Promise<void>
   stop(grund: StopGrund): void
+  /** Prüft vor jedem Tipp, ob das Mikrofon überhaupt starten kann; sonst Status 'unsicher'. */
+  pruefeZugang(): boolean
 }
 
 export interface MicControllerDeps {
@@ -22,14 +30,9 @@ export interface MicControllerDeps {
   jetzt?: () => number
 }
 
-function fehlerText(fehler: unknown): string {
-  if (typeof fehler === 'object' && fehler !== null) {
-    const f = fehler as { name?: unknown; message?: unknown }
-    const name = typeof f.name === 'string' ? f.name : 'Fehler'
-    const nachricht = typeof f.message === 'string' ? f.message : String(fehler)
-    return `${name}: ${nachricht}`
-  }
-  return String(fehler)
+// Setzt den Hinweis nur bei Änderung – kein Store-Update pro Frame.
+function setzeHinweis(hinweis: MicHinweisArt | null): void {
+  if (useMicStore.getState().hinweis !== hinweis) useMicStore.setState({ hinweis })
 }
 
 // Ein Detektor pro Fenstergröße, einmal erzeugt und wiederverwendet (nie pro Frame).
@@ -63,6 +66,8 @@ export function erstelleMicController({
   // Glättung: Tor mit Hysterese, Median, Notenwechsel-Bestätigung, Oktavschutz, Nachhalten.
   const smoother = new PitchSmoother(jetzt)
   let letzteGueltigeHz: number | null = null
+  // Seit wann alle Samples exakt 0 sind (null = es kommt Signal).
+  let nullSeit: number | null = null
 
   // Baut die Live-Werte: Note aus der Glättung, Pegel und Klarheit roh.
   function liveWerte(g: GeglaetteteAnzeige, a: FrameAnalyse): LiveWerte {
@@ -99,6 +104,16 @@ export function erstelleMicController({
     const g = smoother.push(a)
     if (a.valid) letzteGueltigeHz = a.hz
     const t = jetzt()
+    // Exakte Nullen (nicht bloß leise) heißen: das Mikrofon liefert gar nichts.
+    if (a.rms === 0) {
+      if (nullSeit === null) nullSeit = t
+    } else {
+      nullSeit = null
+    }
+    const keinSignal = nullSeit !== null && t - nullSeit > KEIN_SIGNAL_MS
+    const angehalten = quelle.kontextStatus() !== 'running'
+    // Höchstens ein Hinweis zugleich; „keinSignal“ hat Vorrang.
+    setzeHinweis(keinSignal ? 'keinSignal' : angehalten ? 'angehalten' : null)
     if (t - letzteVeroeffentlichung >= MIN_ABSTAND_MS) {
       letzteVeroeffentlichung = t
       useMicStore.setState({ live: liveWerte(g, a) })
@@ -110,13 +125,16 @@ export function erstelleMicController({
     const { status } = useMicStore.getState()
     if (status === 'startet' || status === 'laeuft') return
     const meineNummer = ++laufNummer
-    useMicStore.setState({ status: 'startet', fehlerDetails: null })
+    useMicStore.setState({ status: 'startet', fehlerDetails: null, fehlerArt: null, hinweis: null })
+    nullSeit = null
     // Synchron aufrufen – kein await davor, sonst verliert iOS die Tipp-Geste (D-01).
     const p = quelle.start()
     try {
       await p
       if (meineNummer === laufNummer) {
-        useMicStore.setState({ status: 'laeuft' })
+        // Läuft der Kontext auch nach dem zweiten resume() nicht, hilft nur Stopp + Start.
+        const hinweis = quelle.kontextStatus() !== 'running' ? 'angehalten' : null
+        useMicStore.setState({ status: 'laeuft', hinweis })
         letzteVeroeffentlichung = -Infinity
         smoother.reset()
         letzteGueltigeHz = null
@@ -124,9 +142,24 @@ export function erstelleMicController({
       }
     } catch (fehler) {
       if (meineNummer === laufNummer) {
-        useMicStore.setState({ status: 'fehler', fehlerDetails: fehlerText(fehler) })
+        const art = classifyMicError(fehler)
+        if (art === 'unsicher') {
+          useMicStore.setState({ status: 'unsicher' })
+        } else {
+          useMicStore.setState({
+            status: 'fehler',
+            fehlerArt: art,
+            fehlerDetails: fehlerText(fehler),
+          })
+        }
       }
     }
+  }
+
+  function pruefeZugang(): boolean {
+    if (quelle.zugangMoeglich()) return true
+    useMicStore.setState({ status: 'unsicher' })
+    return false
   }
 
   function stop(grund: StopGrund): void {
@@ -138,11 +171,18 @@ export function erstelleMicController({
     quelle.stop()
     smoother.reset()
     letzteGueltigeHz = null
+    nullSeit = null
     const status = grund === 'nutzer' ? 'gestoppt' : grund === 'verlassen' ? 'idle' : 'hintergrund'
-    useMicStore.setState({ status, fehlerDetails: null, live: MIC_START_ZUSTAND.live })
+    useMicStore.setState({
+      status,
+      fehlerDetails: null,
+      fehlerArt: null,
+      hinweis: null,
+      live: MIC_START_ZUSTAND.live,
+    })
   }
 
-  return { start, stop }
+  return { start, stop, pruefeZugang }
 }
 
 let aktiv: MicController | null = null
