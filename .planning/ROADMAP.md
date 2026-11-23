@@ -77,7 +77,33 @@ Plans:
   4. Am Klavier testen: Einzelne Tasten in verschiedenen Lagen (auch C2/C3) anschlagen – der richtige Ton erscheint; ein gehaltenes A4 bleibt mindestens 2 Sekunden stabil bei ca. 440 Hz (±10 Cent).
   5. Am Klavier testen: dasselbe einmal im Safari-Tab und einmal vom Home-Bildschirm aus probieren und das Ergebnis notieren.
 
-**Plans**: TBD
+**Plans**: 6 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — Mic an/aus: Mikrofon-Test page, one-tap start (AudioContext resumed in the tap, voice filters off), Stop/Zurück release the mic (MIC-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-02-PLAN.md — pitchy legitimacy checkpoint + install, live German note name/octave/cents/Hz (MIC-02)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-03-PLAN.md — Stable held note (smoother), level + clarity meters, tuner bar with ±10-cent band (MIC-03, MIC-05)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 02-04-PLAN.md — German error help with retry, no-HTTPS warning, hints, background stop (MIC-01)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+
+- [ ] 02-05-PLAN.md — Diagnose panel (sample rates, filters, audio state, launch mode) beside the live values (MIC-04)
+
+**Wave 6** *(blocked on Wave 5 completion)*
+
+- [ ] 02-06-PLAN.md — Release 0.3.0 and piano checklist twice (Safari tab + home screen), go/no-go (MIC-01..05)
+
 **UI hint**: yes
 **Research flag**: ja – pitchy vs. YIN am echten Klavier, Fensterlänge für tiefe Töne, `getSettings()` auf dem iPad
 
@@ -240,7 +266,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Grundgerüst und Online-Adresse | 5/5 | Complete   | 2026-11-23 |
-| 2. Mikrofon-Testseite | 0/TBD | Not started | - |
+| 2. Mikrofon-Testseite | 0/6 | Not started | - |
 | 3. Kalibrierung | 0/TBD | Not started | - |
 | 4. Anschlag-Erkennung | 0/TBD | Not started | - |
 | 5. Erstes Stück (Für Elise) | 0/TBD | Not started | - |
