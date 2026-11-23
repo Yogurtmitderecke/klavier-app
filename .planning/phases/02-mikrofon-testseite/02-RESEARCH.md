@@ -415,17 +415,21 @@ Note: class field declarations like `state = 'suspended'` are fine under `erasab
 | A8 | Creating the AudioContext before getUserMedia yields a correct sample rate on iPadOS 26 | Pattern 1 / Pitfall 3 | Pitch shifted ~1.5 semitones. Diagnostics plus A4 test catch it; lever: create after gUM |
 | A9 | Real piano spectra roll off steeply enough that the inharmonicity bias stays ≲ 10 c in the sustain | Pitfall 1 | A4 cents read high. Criterion defined relative to its own average; low-pass lever |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **How to judge "A4 at ~440 Hz ±10 cents" when the piano may not be at 440?**
    - Known: the detection bias plus piano tuning can both shift the absolute value; calibration is Phase 3.
    - Recommendation: the checklist item passes if the note stays A4 ≥ 2 s and the cents stay inside a ±10 band around their own mean. Record the absolute value. Flag it as "Stimmung weicht ab" (tuning is off) if |mean| > 10 c, and treat that as information for Phase 3, not a Phase 2 failure. The planner should state this explicitly in the checkpoint.
+   - RESOLVED: CONTEXT D-08 (A4 pass criterion) + plan 02-06 Task 2 checkpoint (relative ±10 c band, absolute mean only recorded, "Stimmung weicht ab" if |mean| > 10).
 2. **Should a window-size switch (4096/8192) be in the diagnostics panel?**
    - D-05 forbids test helpers, but a diagnostic switch would save redeploy cycles in the D-07 loop.
    - Recommendation: not in the first plan. Keep `FFT_SIZE` as one constant and add a switch only if the piano test fails in the bass.
+   - RESOLVED: deferred per recommendation; plans keep one `FFT_SIZE = 4096` constant (plan 02-01) and add no switch (D-05).
 3. **Note naming vs. KOMF-02 (v2: German names with a toggle).**
    - Recommendation: German names now (CONTEXT asks for it) plus the international name/Hz in the secondary line. The toggle stays v2.
+   - RESOLVED: plan 02-02 (noteMath German names incl. B/H, NotenAnzeige secondary line 'international: …' + Hz); the toggle stays v2 (KOMF-02).
 4. **Stop on `visibilitychange: hidden`?** Recommendation: yes (simplest, and it releases the mic indicator). Phase 11 builds the proper "pausiert – tippen zum Fortsetzen".
+   - RESOLVED: plan 02-04 Task 2 (visibilitychange → hidden stops the mic via stop('hintergrund'); pagehide stops it too).
 
 ## Environment Availability
 
