@@ -1,6 +1,10 @@
+import type { PitchDetector } from 'pitchy'
 import { AnalyserPitchSource } from './analyserPitchSource'
+import { FFT_SIZE, GATE_OPEN_DB, PUBLISH_HZ } from './einstellungen'
+import { internationalName, midiToNote } from './noteMath'
+import { analysiereFrame, erstelleDetektor } from './pitchAnalysis'
 import type { PitchSource } from './pitchSource'
-import { useMicStore } from '../state/micStore'
+import { MIC_START_ZUSTAND, useMicStore, type LiveWerte } from '../state/micStore'
 
 // Warum gestoppt wird: Nutzer-Tipp, Seite verlassen oder App im Hintergrund.
 export type StopGrund = 'nutzer' | 'verlassen' | 'hintergrund'
@@ -8,6 +12,13 @@ export type StopGrund = 'nutzer' | 'verlassen' | 'hintergrund'
 export interface MicController {
   start(): Promise<void>
   stop(grund: StopGrund): void
+}
+
+export interface MicControllerDeps {
+  quelle?: PitchSource
+  raf?: (cb: FrameRequestCallback) => number
+  caf?: (id: number) => void
+  jetzt?: () => number
 }
 
 function fehlerText(fehler: unknown): string {
@@ -20,12 +31,59 @@ function fehlerText(fehler: unknown): string {
   return String(fehler)
 }
 
-// Steuert Start/Stopp des Mikrofons und schreibt den Zustand in den micStore.
+// Ein Detektor pro Fenstergröße, einmal erzeugt und wiederverwendet (nie pro Frame).
+const detektorCache = new Map<number, PitchDetector<Float32Array>>()
+
+function holeDetektor(n: number): PitchDetector<Float32Array> {
+  let d = detektorCache.get(n)
+  if (d === undefined) {
+    d = erstelleDetektor(n)
+    detektorCache.set(n, d)
+  }
+  return d
+}
+
+const MIN_ABSTAND_MS = 1000 / PUBLISH_HZ
+
+// Steuert Start/Stopp des Mikrofons, analysiert jeden Frame und meldet
+// gedrosselte Live-Werte an den micStore.
 export function erstelleMicController({
   quelle = new AnalyserPitchSource(),
-}: { quelle?: PitchSource } = {}): MicController {
+  raf = (cb) => window.requestAnimationFrame(cb),
+  caf = (id) => window.cancelAnimationFrame(id),
+  jetzt = () => performance.now(),
+}: MicControllerDeps = {}): MicController {
   // Zählt Läufe; ein Stopp während des Startens macht den laufenden Start ungültig.
   let laufNummer = 0
+  let wartenderFrame: number | null = null
+  let letzteVeroeffentlichung = -Infinity
+  // Ein Puffer für alle Frames – keine Allokation pro Frame.
+  const puffer = new Float32Array(FFT_SIZE)
+
+  function frame(meineNummer: number): void {
+    wartenderFrame = null
+    if (meineNummer !== laufNummer) return
+    quelle.readFrame(puffer)
+    const a = analysiereFrame(puffer, quelle.sampleRate, holeDetektor(FFT_SIZE), jetzt)
+    const t = jetzt()
+    if (t - letzteVeroeffentlichung >= MIN_ABSTAND_MS) {
+      letzteVeroeffentlichung = t
+      // Vorläufig direkte Anzeige; Plan 03 ersetzt das durch die Glättung (PitchSmoother).
+      const zeigeTon = a.valid && a.midiFloat !== null && a.db >= GATE_OPEN_DB
+      const note = zeigeTon ? midiToNote(a.midiFloat as number) : null
+      const live: LiveWerte = {
+        notenLabel: note?.label ?? null,
+        cents: note?.cents ?? null,
+        hz: note ? a.hz : null,
+        international: note ? internationalName(note.midi) : null,
+        db: a.db,
+        klarheit: a.clarity,
+        gehalten: false,
+      }
+      useMicStore.setState({ live })
+    }
+    wartenderFrame = raf(() => frame(meineNummer))
+  }
 
   async function start(): Promise<void> {
     const { status } = useMicStore.getState()
@@ -36,7 +94,11 @@ export function erstelleMicController({
     const p = quelle.start()
     try {
       await p
-      if (meineNummer === laufNummer) useMicStore.setState({ status: 'laeuft' })
+      if (meineNummer === laufNummer) {
+        useMicStore.setState({ status: 'laeuft' })
+        letzteVeroeffentlichung = -Infinity
+        wartenderFrame = raf(() => frame(meineNummer))
+      }
     } catch (fehler) {
       if (meineNummer === laufNummer) {
         useMicStore.setState({ status: 'fehler', fehlerDetails: fehlerText(fehler) })
@@ -46,9 +108,13 @@ export function erstelleMicController({
 
   function stop(grund: StopGrund): void {
     laufNummer++
+    if (wartenderFrame !== null) {
+      caf(wartenderFrame)
+      wartenderFrame = null
+    }
     quelle.stop()
     const status = grund === 'nutzer' ? 'gestoppt' : grund === 'verlassen' ? 'idle' : 'hintergrund'
-    useMicStore.setState({ status, fehlerDetails: null })
+    useMicStore.setState({ status, fehlerDetails: null, live: MIC_START_ZUSTAND.live })
   }
 
   return { start, stop }
