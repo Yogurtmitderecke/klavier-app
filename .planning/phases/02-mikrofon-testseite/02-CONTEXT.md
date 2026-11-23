@@ -26,6 +26,8 @@ Requirements: MIC-01, MIC-02, MIC-03, MIC-04, MIC-05. Not in scope: onset/keystr
 - **D-06:** The checklist is run **twice**: once in a **Safari tab** and once **from the home-screen icon**. The plan includes a short German how-to for adding the app to the home screen (Share button → "Zum Home-Bildschirm").
 - **D-07:** If the piano test shows the detection is not good enough (e.g. wrong low notes, unstable A4), **we stay in Phase 2 and improve** (e.g. A/B against YIN/pitchfinder, longer analysis window for the low register) until the checklist passes. Phase 3 only starts after a pass.
 
+- **D-08:** **A4 pass criterion (decided after research):** the held A4 passes if the page shows "A4" for at least 2 s without flickering and the cents value stays within ±10 of its own average. The absolute deviation (e.g. +15 cents, from piano inharmonicity or tuning) is only recorded, not a failure; correcting it is Phase 3 calibration. This refines roadmap SC 4 ("~440 Hz ±10 cents").
+
 ### Claude's Discretion
 - **Mic failure / denial handling:** user said "entscheide du". Leaning: clear German message on the test page explaining what went wrong, a short step-by-step for re-enabling the mic permission in Safari, and a "Nochmal versuchen" button. Must also cover "not a secure context" and "no mic available".
 - **Note display:** user did not discuss. Claude decides naming (German convention, e.g. H instead of B; sharps vs. flats), octave notation (scientific, e.g. "A4", matches the roadmap's C2/C3/A4 wording), cent display (number and/or tuner-style indicator), sizes readable at ~60 cm.
