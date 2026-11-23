@@ -54,7 +54,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-03-PLAN.md — GitHub Pages deploy via Actions, GitHub setup checkpoint, first live HTTPS deploy (DEPL-01)
+- [x] 01-03-PLAN.md — GitHub Pages deploy via Actions, GitHub setup checkpoint, first live HTTPS deploy (DEPL-01)
 - [x] 01-04-PLAN.md — Overview tiles, Mikrofon-Test placeholder with Zurück, no-HTTPS warning (DEPL-02, D-04..D-07)
 
 **Wave 4** *(blocked on Wave 3 completion)*
@@ -239,7 +239,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Grundgerüst und Online-Adresse | 3/5 | In Progress|  |
+| 1. Grundgerüst und Online-Adresse | 4/5 | In Progress|  |
 | 2. Mikrofon-Testseite | 0/TBD | Not started | - |
 | 3. Kalibrierung | 0/TBD | Not started | - |
 | 4. Anschlag-Erkennung | 0/TBD | Not started | - |
