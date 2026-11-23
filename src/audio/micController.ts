@@ -1,9 +1,10 @@
 import type { PitchDetector } from 'pitchy'
 import { AnalyserPitchSource } from './analyserPitchSource'
-import { FFT_SIZE, GATE_OPEN_DB, PUBLISH_HZ } from './einstellungen'
+import { FFT_SIZE, PUBLISH_HZ } from './einstellungen'
 import { internationalName, midiToNote } from './noteMath'
-import { analysiereFrame, erstelleDetektor } from './pitchAnalysis'
+import { analysiereFrame, erstelleDetektor, type FrameAnalyse } from './pitchAnalysis'
 import type { PitchSource } from './pitchSource'
+import { PitchSmoother, type GeglaetteteAnzeige } from './smoothing'
 import { MIC_START_ZUSTAND, useMicStore, type LiveWerte } from '../state/micStore'
 
 // Warum gestoppt wird: Nutzer-Tipp, Seite verlassen oder App im Hintergrund.
@@ -59,28 +60,48 @@ export function erstelleMicController({
   let letzteVeroeffentlichung = -Infinity
   // Ein Puffer für alle Frames – keine Allokation pro Frame.
   const puffer = new Float32Array(FFT_SIZE)
+  // Glättung: Tor mit Hysterese, Median, Notenwechsel-Bestätigung, Oktavschutz, Nachhalten.
+  const smoother = new PitchSmoother(jetzt)
+  let letzteGueltigeHz: number | null = null
+
+  // Baut die Live-Werte: Note aus der Glättung, Pegel und Klarheit roh.
+  function liveWerte(g: GeglaetteteAnzeige, a: FrameAnalyse): LiveWerte {
+    if (g.midi === null) {
+      return {
+        notenLabel: null,
+        cents: null,
+        hz: null,
+        international: null,
+        db: a.db,
+        klarheit: a.clarity,
+        gehalten: false,
+      }
+    }
+    const note = midiToNote(g.midiFloat ?? g.midi)
+    const hz = g.midiFloat !== null ? 440 * 2 ** ((g.midiFloat - 69) / 12) : letzteGueltigeHz
+    return {
+      notenLabel: note.label,
+      cents: g.midiFloat !== null ? note.cents : null,
+      hz,
+      international: internationalName(g.midi),
+      db: a.db,
+      klarheit: a.clarity,
+      gehalten: g.gehalten,
+    }
+  }
 
   function frame(meineNummer: number): void {
     wartenderFrame = null
     if (meineNummer !== laufNummer) return
     quelle.readFrame(puffer)
     const a = analysiereFrame(puffer, quelle.sampleRate, holeDetektor(FFT_SIZE), jetzt)
+    // Jeder Frame geht durch die Glättung – auch die, die nicht veröffentlicht werden.
+    const g = smoother.push(a)
+    if (a.valid) letzteGueltigeHz = a.hz
     const t = jetzt()
     if (t - letzteVeroeffentlichung >= MIN_ABSTAND_MS) {
       letzteVeroeffentlichung = t
-      // Vorläufig direkte Anzeige; Plan 03 ersetzt das durch die Glättung (PitchSmoother).
-      const zeigeTon = a.valid && a.midiFloat !== null && a.db >= GATE_OPEN_DB
-      const note = zeigeTon ? midiToNote(a.midiFloat as number) : null
-      const live: LiveWerte = {
-        notenLabel: note?.label ?? null,
-        cents: note?.cents ?? null,
-        hz: note ? a.hz : null,
-        international: note ? internationalName(note.midi) : null,
-        db: a.db,
-        klarheit: a.clarity,
-        gehalten: false,
-      }
-      useMicStore.setState({ live })
+      useMicStore.setState({ live: liveWerte(g, a) })
     }
     wartenderFrame = raf(() => frame(meineNummer))
   }
@@ -97,6 +118,8 @@ export function erstelleMicController({
       if (meineNummer === laufNummer) {
         useMicStore.setState({ status: 'laeuft' })
         letzteVeroeffentlichung = -Infinity
+        smoother.reset()
+        letzteGueltigeHz = null
         wartenderFrame = raf(() => frame(meineNummer))
       }
     } catch (fehler) {
@@ -113,6 +136,8 @@ export function erstelleMicController({
       wartenderFrame = null
     }
     quelle.stop()
+    smoother.reset()
+    letzteGueltigeHz = null
     const status = grund === 'nutzer' ? 'gestoppt' : grund === 'verlassen' ? 'idle' : 'hintergrund'
     useMicStore.setState({ status, fehlerDetails: null, live: MIC_START_ZUSTAND.live })
   }
