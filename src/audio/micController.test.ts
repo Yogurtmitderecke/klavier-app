@@ -337,3 +337,111 @@ describe('micController – Fehlerarten, Hinweise und Wiederholen (MIC-01)', () 
     expect(fake.mediaDevices.getUserMedia).toHaveBeenCalledTimes(2)
   })
 })
+
+describe('micController – Diagnose (MIC-04)', () => {
+  beforeEach(() => {
+    useMicStore.setState({ ...MIC_START_ZUSTAND })
+  })
+
+  async function starte() {
+    const fake = erstelleFakeAudio()
+    const uhr = erstelleFakeRaf()
+    fake.setzeSignal(sinus(440, 4096, 48000, 0.2))
+    const controller = erstelleMicController({
+      quelle: fake.quelle,
+      raf: uhr.raf,
+      caf: uhr.caf,
+      jetzt: uhr.jetzt,
+    })
+    await controller.start()
+    return { fake, uhr, controller }
+  }
+
+  it('zeigt vor dem Start Startart, Version und Fenstergröße', () => {
+    const fake = erstelleFakeAudio()
+    const controller = erstelleMicController({ quelle: fake.quelle })
+    controller.pruefeZugang()
+    const d = useMicStore.getState().diagnose
+    expect(d.startart).toBe('safari')
+    expect(d.appVersion).toMatch(/^Version /)
+    expect(d.fensterGroesse).toBe(4096)
+    expect(d.abtastrateApp).toBeNull()
+    expect(d.mikLaeuft).toBe(false)
+  })
+
+  it('meldet nach dem Start, was das Gerät geliefert hat', async () => {
+    await starte()
+    const d = useMicStore.getState().diagnose
+    expect(d.abtastrateApp).toBe(48000)
+    expect(d.abtastrateMikro).toBe(48000)
+    expect(d.echo).toBe(false)
+    expect(d.rausch).toBeUndefined()
+    expect(d.autoPegel).toBeUndefined()
+    expect(d.einstellbar).toEqual(['echoCancellation'])
+    expect(d.mikrofonName).toBe('iPad Mikrofon')
+    expect(d.spur).toBe('aktiv')
+    expect(d.kontextStatus).toBe('running')
+    expect(d.fensterGroesse).toBe(4096)
+    expect(d.mikLaeuft).toBe(true)
+  })
+
+  it('zählt etwa 60 Analysen pro Sekunde und misst die Analysedauer', async () => {
+    const { uhr } = await starte()
+    uhr.schritt(60)
+    const d = useMicStore.getState().diagnose
+    expect(d.analysenProSek).toBeGreaterThanOrEqual(55)
+    expect(d.analysenProSek).toBeLessThanOrEqual(65)
+    expect(Number.isFinite(d.analyseMs)).toBe(true)
+    expect(d.analyseMs ?? -1).toBeGreaterThanOrEqual(0)
+  })
+
+  it('meldet stumme und beendete Spuren als letztes Ereignis', async () => {
+    const { fake } = await starte()
+    fake.spurEreignis('mute')
+    let d = useMicStore.getState().diagnose
+    expect(d.spur).toBe('stumm')
+    expect(d.letztesEreignis?.text).toBe('Spur stumm')
+    expect(d.letztesEreignis?.zeit).toMatch(/^\d{2}:\d{2}:\d{2}$/)
+
+    fake.spurEreignis('unmute')
+    expect(useMicStore.getState().diagnose.spur).toBe('aktiv')
+    expect(useMicStore.getState().diagnose.letztesEreignis?.text).toBe('Spur wieder aktiv')
+
+    fake.spurEreignis('ended')
+    d = useMicStore.getState().diagnose
+    expect(d.spur).toBe('beendet')
+    expect(d.letztesEreignis?.text).toBe('Spur beendet')
+  })
+
+  it('meldet Änderungen des Audio-Status', async () => {
+    const { fake } = await starte()
+    fake.kontextEreignis('interrupted' as AudioContextState)
+    const d = useMicStore.getState().diagnose
+    expect(d.kontextStatus).toBe('interrupted')
+    expect(d.letztesEreignis?.text).toBe('Audio-Status: interrupted')
+  })
+
+  it('zeigt bei verweigerter Erlaubnis die rohen Fehlerdetails', async () => {
+    const fake = erstelleFakeAudio()
+    fake.mediaDevices.getUserMedia.mockRejectedValueOnce(
+      new DOMException('denied', 'NotAllowedError'),
+    )
+    const controller = erstelleMicController({ quelle: fake.quelle })
+    await controller.start()
+    expect(useMicStore.getState().diagnose.fehlerDetails).toBe('NotAllowedError: denied')
+  })
+
+  it('behält nach dem Stopp die Gerätewerte, entfernt alle Hörer und meldet den Stopp', async () => {
+    const { fake, controller } = await starte()
+    expect(fake.hoererAnzahl()).toBeGreaterThan(0)
+    controller.stop('nutzer')
+    const d = useMicStore.getState().diagnose
+    expect(d.abtastrateMikro).toBe(48000)
+    expect(d.echo).toBe(false)
+    expect(d.kontextStatus).toBe('suspended')
+    expect(d.spur === 'beendet' || d.spur === null).toBe(true)
+    expect(d.mikLaeuft).toBe(false)
+    expect(d.analysenProSek).toBeNull()
+    expect(fake.hoererAnzahl()).toBe(0)
+  })
+})
