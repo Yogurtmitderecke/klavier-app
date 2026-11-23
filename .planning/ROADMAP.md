@@ -98,7 +98,7 @@ Plans:
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
-- [ ] 02-05-PLAN.md — Diagnose panel (sample rates, filters, audio state, launch mode) beside the live values (MIC-04)
+- [x] 02-05-PLAN.md — Diagnose panel (sample rates, filters, audio state, launch mode) beside the live values (MIC-04)
 
 **Wave 6** *(blocked on Wave 5 completion)*
 
@@ -266,7 +266,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Grundgerüst und Online-Adresse | 5/5 | Complete   | 2026-11-23 |
-| 2. Mikrofon-Testseite | 4/6 | In Progress|  |
+| 2. Mikrofon-Testseite | 5/6 | In Progress|  |
 | 3. Kalibrierung | 0/TBD | Not started | - |
 | 4. Anschlag-Erkennung | 0/TBD | Not started | - |
 | 5. Erstes Stück (Für Elise) | 0/TBD | Not started | - |
