@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { BackButton } from '../components/BackButton'
+import { DiagnosePanel } from '../components/DiagnosePanel'
 import { MicFehler } from '../components/MicFehler'
 import { MicHinweis } from '../components/MicHinweis'
 import { MicStatusText } from '../components/MicStatusText'
@@ -42,6 +43,7 @@ export function MicTestScreen() {
   const status = useMicStore((s) => s.status)
   const fehlerArt = useMicStore((s) => s.fehlerArt)
   const hinweis = useMicStore((s) => s.hinweis)
+  const diagnose = useMicStore((s) => s.diagnose)
   // Messbalken zeigen nur bei laufendem Mikrofon Live-Werte, sonst „–“.
   const laeuft = status === 'laeuft'
   const dbAnzeige = laeuft ? db : null
@@ -140,6 +142,8 @@ export function MicTestScreen() {
         {hinweis !== null && <MicHinweis art={hinweis} />}
         {inhalt}
       </div>
+      {/* Immer sichtbar – auch bei Fehler und ohne HTTPS (MIC-04, Bildschirmfoto-Diagnose). */}
+      <DiagnosePanel diagnose={diagnose} />
     </div>
   )
 }

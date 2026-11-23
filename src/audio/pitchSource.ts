@@ -16,6 +16,10 @@ export interface PitchSource {
   kontextStatus(): KontextStatus | null
   /** false ohne HTTPS oder ohne getUserMedia – dann kann das Mikrofon gar nicht starten. */
   zugangMoeglich(): boolean
+  /** Diagnose-Schnappschuss; Gerätewerte des letzten Laufs bleiben nach stop() stehen. */
+  diagnose(): QuellenDiagnose
+  /** Rückruf bei Spur- oder Kontext-Ereignissen (stumm, beendet, statechange); null meldet ab. */
+  beiAenderung(cb: (() => void) | null): void
 }
 
 // Was das Gerät der App wirklich geliefert hat (MIC-04).
