@@ -14,6 +14,7 @@
   --font-body: 24px;
   --font-heading: 32px;
   --font-display: 56px;
+  --font-anzeige: 120px;
 
   /* Farben */
   --color-bg: #16181D;
@@ -492,4 +493,70 @@ h1:focus {
 .warning-bar-link:focus-visible {
   outline: 3px solid var(--color-accent);
   outline-offset: 4px;
+}
+
+/* Messkarte (Phase 2): gehörter Ton groß, daneben Cent, Hz und internationaler Name. */
+.messkarte {
+  margin-top: var(--space-lg);
+  padding: var(--space-lg);
+  border-radius: 16px;
+  background: var(--color-surface);
+}
+
+.noten-zeile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.note {
+  min-width: 4ch;
+  font-size: var(--font-anzeige);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.noten-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.note-cents {
+  font-size: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text);
+}
+
+.note-hz {
+  font-size: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.note-international {
+  font-size: var(--font-label);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+/* Gehaltene Note (nach dem Verklingen) gedimmt. */
+.note--gehalten,
+.noten-details--gehalten .note-cents {
+  color: var(--color-text-secondary);
+}
+
+/* Kein Ton: Platzhalter „–“ und alle Werte gedämpft. */
+.note--leer,
+.noten-zeile--leer .noten-details,
+.noten-zeile--leer .note-cents,
+.noten-zeile--leer .note-hz,
+.noten-zeile--leer .note-international {
+  color: var(--color-text-muted);
 }

@@ -51,5 +51,11 @@ export const TEXTE = {
       fehler: 'Das Mikrofon konnte nicht starten.',
       unsicher: 'Ohne HTTPS geht das Mikrofon nicht.',
     },
+    // Messkarte: gehörter Ton mit Cent, Hz und internationalem Namen.
+    messkarte: {
+      abschnitt: 'Gehörter Ton',
+      platzhalter: '–',
+      internationalPrefix: 'international: ',
+    },
   },
 } as const
