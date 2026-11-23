@@ -2,6 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import App from './App'
 import { useAppStore } from './state/appStore'
+import { erstelleMicController, setzeMicController } from './audio/micController'
+import { erstelleFakeAudio } from './audio/testFakes'
+import { MIC_START_ZUSTAND, useMicStore } from './state/micStore'
 
 describe('Start-Ablauf', () => {
   beforeEach(() => {
@@ -63,6 +66,7 @@ describe('Übersicht mit Kacheln', () => {
     }
     const mikro = screen.getByRole('button', { name: /Mikrofon-Test/ })
     expect(mikro.getAttribute('aria-disabled')).toBeNull()
+    expect(mikro.textContent).not.toContain('kommt bald')
   })
 
   it('zeigt beim Tippen auf eine gesperrte Kachel 3 s lang einen Hinweis und navigiert nicht', () => {
@@ -84,16 +88,21 @@ describe('Übersicht mit Kacheln', () => {
   })
 })
 
-describe('Mikrofon-Test-Platzhalter', () => {
+describe('Mikrofon-Test', () => {
+  let fake: ReturnType<typeof erstelleFakeAudio>
+
   beforeEach(() => {
+    fake = erstelleFakeAudio()
+    setzeMicController(erstelleMicController({ quelle: fake.quelle }))
     useAppStore.setState({ screen: 'welcome' })
+    useMicStore.setState({ ...MIC_START_ZUSTAND })
   })
 
   afterEach(() => {
     cleanup()
   })
 
-  it('öffnet den Platzhalter und kehrt mit „‹ Zurück“ zur Übersicht zurück, ohne die URL zu ändern', () => {
+  it('öffnet den Mikrofon-Test und kehrt mit „‹ Zurück“ zur Übersicht zurück, ohne die URL zu ändern', () => {
     render(<App />)
     const hrefVorher = window.location.href
 
@@ -102,15 +111,19 @@ describe('Mikrofon-Test-Platzhalter', () => {
 
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Mikrofon-Test')
     expect(screen.getByRole('button', { name: '‹ Zurück' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Mikrofon starten' })).toBeTruthy()
     expect(document.querySelector('.version-label')).toBeNull()
     expect(document.body.textContent).toContain(
-      'Hier entsteht als Nächstes der Mikrofon-Test. Das Mikrofon ist noch nicht eingeschaltet. Tippe auf „Zurück“, um zur Übersicht zu gelangen.',
+      'Das Mikrofon ist aus. Tippe auf „Mikrofon starten“.',
     )
+    // Das Öffnen der Seite allein fragt nie nach dem Mikrofon (D-01).
+    expect(fake.mediaDevices.getUserMedia).not.toHaveBeenCalled()
     expect(window.location.href).toBe(hrefVorher)
 
     fireEvent.click(screen.getByRole('button', { name: '‹ Zurück' }))
 
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Was möchtest du tun?')
+    expect(fake.mediaDevices.getUserMedia).not.toHaveBeenCalled()
     expect(window.location.href).toBe(hrefVorher)
   })
 })

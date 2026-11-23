@@ -53,8 +53,7 @@ export function OverviewScreen() {
         <Tile
           titel={kacheln.mikrofonTest.titel}
           beschreibung={kacheln.mikrofonTest.beschreibung}
-          badge
-          onClick={() => setScreen('mic-placeholder')}
+          onClick={() => setScreen('mic-test')}
         />
         <Tile
           titel={kacheln.stueckeUeben.titel}

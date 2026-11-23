@@ -32,8 +32,24 @@ export const TEXTE = {
   },
   // Zurück-Knopf aller Unterseiten (D-06): U+2039 + Leerzeichen + „Zurück“.
   zurueck: '‹ Zurück',
-  mikrofonPlatzhalter: {
+  // Mikrofon-Test (Phase 2): Knopf-Beschriftungen und Statustexte.
+  mikrofonTest: {
     titel: 'Mikrofon-Test',
-    text: 'Hier entsteht als Nächstes der Mikrofon-Test. Das Mikrofon ist noch nicht eingeschaltet. Tippe auf „Zurück“, um zur Übersicht zu gelangen.',
+    knopf: {
+      starten: 'Mikrofon starten',
+      startet: 'Startet …',
+      stoppen: 'Mikrofon stoppen',
+      nochmal: 'Nochmal versuchen',
+    },
+    status: {
+      idle: 'Das Mikrofon ist aus. Tippe auf „Mikrofon starten“.',
+      startet: 'Bitte erlaube das Mikrofon, wenn Safari fragt.',
+      laeuftOhneTon: 'Mikrofon läuft – spiel einen Ton.',
+      laeuftMitTon: 'Mikrofon läuft.',
+      gestoppt: 'Mikrofon gestoppt. Es hört nichts mehr.',
+      hintergrund: 'Mikrofon gestoppt, weil die App im Hintergrund war.',
+      fehler: 'Das Mikrofon konnte nicht starten.',
+      unsicher: 'Ohne HTTPS geht das Mikrofon nicht.',
+    },
   },
 } as const
