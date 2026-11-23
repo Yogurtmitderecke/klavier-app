@@ -107,3 +107,38 @@ export function erstelleFakeAudio(optionen: FakeAudioOptionen = {}) {
     },
   }
 }
+
+// Nur für Tests: manuelle requestAnimationFrame-Warteschlange mit eigener Uhr.
+// schritt() stellt die Uhr vor und führt dann alle wartenden Rückrufe aus.
+export function erstelleFakeRaf() {
+  let zeit = 0
+  let naechsteId = 1
+  let warteschlange = new Map<number, FrameRequestCallback>()
+
+  const raf = vi.fn((cb: FrameRequestCallback): number => {
+    const id = naechsteId++
+    warteschlange.set(id, cb)
+    return id
+  })
+  const caf = vi.fn((id: number): void => {
+    warteschlange.delete(id)
+  })
+  const jetzt = (): number => zeit
+
+  function schritt(anzahl = 1, msProSchritt = 16.7): void {
+    for (let i = 0; i < anzahl; i++) {
+      zeit += msProSchritt
+      const faellig = warteschlange
+      warteschlange = new Map()
+      for (const cb of faellig.values()) cb(zeit)
+    }
+  }
+
+  return {
+    raf,
+    caf,
+    jetzt,
+    schritt,
+    wartend: () => warteschlange.size,
+  }
+}
