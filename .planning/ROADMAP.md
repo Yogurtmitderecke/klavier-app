@@ -94,7 +94,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 02-04-PLAN.md — German error help with retry, no-HTTPS warning, hints, background stop (MIC-01)
+- [x] 02-04-PLAN.md — German error help with retry, no-HTTPS warning, hints, background stop (MIC-01)
 
 **Wave 5** *(blocked on Wave 4 completion)*
 
@@ -266,7 +266,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Grundgerüst und Online-Adresse | 5/5 | Complete   | 2026-11-23 |
-| 2. Mikrofon-Testseite | 3/6 | In Progress|  |
+| 2. Mikrofon-Testseite | 4/6 | In Progress|  |
 | 3. Kalibrierung | 0/TBD | Not started | - |
 | 4. Anschlag-Erkennung | 0/TBD | Not started | - |
 | 5. Erstes Stück (Für Elise) | 0/TBD | Not started | - |
