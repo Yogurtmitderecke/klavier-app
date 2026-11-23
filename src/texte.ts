@@ -56,6 +56,16 @@ export const TEXTE = {
       abschnitt: 'Gehörter Ton',
       platzhalter: '–',
       internationalPrefix: 'international: ',
+      // Stimmgerät-Balken von −50 bis +50 Cent mit ±10-Cent-Band (D-08).
+      tuner: {
+        label: 'Abweichung in Cent',
+        skala: ['−50', '−10', '0', '+10', '+50'],
+      },
+      // Messbalken für Pegel und Klarheit (MIC-03).
+      pegel: {
+        lautstaerke: 'Lautstärke',
+        klarheit: 'Erkennungssicherheit',
+      },
     },
   },
 } as const

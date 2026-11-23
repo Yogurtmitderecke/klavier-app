@@ -30,6 +30,8 @@
   --color-text-on-accent: #16181D;
   --color-warning: #E5604D;
   --color-warning-surface: #3A2220;
+  /* ±10-Cent-Band im Stimmgerät-Balken (bewusst neutral grau, kein Grün). */
+  --color-meter-band: #4A4E58;
 }
 
 html {
@@ -559,4 +561,137 @@ h1:focus {
 .noten-zeile--leer .note-hz,
 .noten-zeile--leer .note-international {
   color: var(--color-text-muted);
+}
+
+/* Stimmgerät-Balken (D-08): −50 … +50 Cent, ±10-Cent-Band, Mittellinie, Nadel. */
+.tuner {
+  position: relative;
+  height: 48px;
+  margin-top: var(--space-lg);
+  border-radius: 8px;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.tuner-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 40%;
+  width: 20%;
+  background: var(--color-meter-band);
+}
+
+.tuner-mitte {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--color-text);
+}
+
+.tuner-nadel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  border-radius: 4px;
+  transform: translateX(-50%);
+  background: var(--color-accent);
+  transition: left 66ms linear;
+}
+
+.tuner-nadel--gehalten {
+  opacity: 0.5;
+}
+
+.tuner-skala {
+  position: relative;
+  height: 28px;
+  margin-top: var(--space-sm);
+  font-size: var(--font-label);
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.tuner-skala-wert {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* Äußere Beschriftungen bündig an den Rändern. */
+.tuner-skala-wert:first-child {
+  transform: none;
+}
+
+.tuner-skala-wert:last-child {
+  transform: translateX(-100%);
+}
+
+/* Messbalken Lautstärke und Erkennungssicherheit (MIC-03). */
+.messkarte-pegel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+.pegel-kopf {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  font-size: var(--font-label);
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.pegel-wert {
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.pegel-spur {
+  position: relative;
+  height: 24px;
+  margin-top: var(--space-sm);
+  border-radius: 12px;
+  background: var(--color-bg);
+}
+
+.pegel-fuellung {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 12px;
+  background: var(--color-text-secondary);
+  transition: width 66ms linear;
+}
+
+.pegel-schwelle {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 32px;
+  transform: translateX(-50%);
+  background: var(--color-text);
+}
+
+@media (max-width: 600px) {
+  .messkarte-pegel {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tuner-nadel,
+  .pegel-fuellung {
+    transition: none;
+  }
 }
