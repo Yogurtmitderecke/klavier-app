@@ -13,7 +13,7 @@ Wir bauen die App in 11 kleinen Schritten. Zuerst kommt die App ins Internet (mi
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Grundgerüst und Online-Adresse** - Leere deutsche App mit großer Schrift ist per HTTPS auf dem iPad erreichbar
+- [x] **Phase 1: Grundgerüst und Online-Adresse** - Leere deutsche App mit großer Schrift ist per HTTPS auf dem iPad erreichbar (completed 2026-11-23)
 - [ ] **Phase 2: Mikrofon-Testseite** - Die App zeigt live, welchen Ton sie vom Klavier hört (Entscheidung: klappt es?)
 - [ ] **Phase 3: Kalibrierung** - Stimmung ausgleichen, Hintergrundgeräusche ausblenden, Empfindlichkeit einstellen
 - [ ] **Phase 4: Anschlag-Erkennung** - Jeder Tastenanschlag wird genau einmal erkannt, auch bei Wiederholungen
@@ -59,7 +59,7 @@ Plans:
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 01-05-PLAN.md — Release 0.2.0 and device/piano test on the iPad, record iPadOS version
+- [x] 01-05-PLAN.md — Release 0.2.0 and device/piano test on the iPad, record iPadOS version
 
 **UI hint**: yes
 
@@ -239,7 +239,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Grundgerüst und Online-Adresse | 4/5 | In Progress|  |
+| 1. Grundgerüst und Online-Adresse | 5/5 | Complete   | 2026-11-23 |
 | 2. Mikrofon-Testseite | 0/TBD | Not started | - |
 | 3. Kalibrierung | 0/TBD | Not started | - |
 | 4. Anschlag-Erkennung | 0/TBD | Not started | - |

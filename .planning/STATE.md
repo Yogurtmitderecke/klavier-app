@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 1 UI-SPEC approved
-last_updated: "2026-11-23T14:06:22.194Z"
+last_updated: "2026-11-23T14:11:40.966Z"
 last_activity: 2026-11-23
 progress:
   total_phases: 11
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 0
+  completed_plans: 5
+  percent: 9
 ---
 
 # Project State
@@ -30,7 +30,7 @@ Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-11-23
 
-Progress: [████████░░] 80%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -76,7 +76,7 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 1]: iPadOS-Version des Nutzers erfragen (wichtig für PWA-Mikrofon und Wake Lock)
+- [Phase 1]: iPadOS-Version: 26.5.2 (erfragt beim Klavier-Test)
 - [Phase 2]: Erkennungsqualität am echten Klavier ist nur auf dem Gerät prüfbar – Go/No-go-Entscheidung
 - [Phase 4]: Entscheiden, ob tiefe Töne (unter C3) für „nur links“ zuverlässig genug sind oder als „experimentell“ markiert werden
 - [Phase 8]: OSMD 3.0.0 ist sehr neu – Version fest pinnen, Fallback 2.3.1
