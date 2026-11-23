@@ -12,7 +12,8 @@ Eine eigene Klavier-Lern-App im Browser, mit der ich auf meinem **akustischen Kl
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Oberfläche auf Deutsch, große Schrift, gut lesbar aus ca. 60 cm Abstand — Validated in Phase 1: Grundgerüst und Online-Adresse (am Klavier auf dem iPad bestätigt)
+- [x] App online über HTTPS (GitHub Pages, https://yogurtmitderecke.github.io/klavier-app/), automatische Veröffentlichung bei jedem Push — Validated in Phase 1
 
 ### Active
 
@@ -28,7 +29,6 @@ Eine eigene Klavier-Lern-App im Browser, mit der ich auf meinem **akustischen Kl
 - [ ] Tempo-Regler (ca. 30–100 %), Metronom, Schleife über ausgewählte Takte
 - [ ] Rückmeldung: richtige Töne grün, falsche rot, Trefferquote pro Durchgang
 - [ ] Fortschritt lokal im Browser speichern (kein Login, kein Server)
-- [ ] Oberfläche auf Deutsch, große Schrift, gut lesbar aus ca. 60 cm Abstand
 - [ ] PWA: auf dem iPad wie eine App installierbar
 - [ ] Anleitung (auf Deutsch, für Nicht-Programmierer), wie man die App kostenlos mit HTTPS online stellt, damit das Mikrofon auf dem iPad funktioniert
 
@@ -92,4 +92,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-22 after initialization*
+*Last updated: 2026-11-23 after Phase 1 (Grundgerüst und Online-Adresse) — App v0.2.0 live, Nutzer-iPad: iPadOS 26.5.2*
