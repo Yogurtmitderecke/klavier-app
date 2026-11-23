@@ -120,3 +120,70 @@ describe('MicTestScreen – gehörter Ton (MIC-02)', () => {
     expect(document.querySelector('.mic-status')?.textContent).toBe('Mikrofon läuft.')
   })
 })
+
+describe('MicTestScreen – Pegel, Erkennungssicherheit und Stimmgerät (MIC-03, D-08)', () => {
+  let fake: ReturnType<typeof erstelleFakeAudio>
+  let uhr: ReturnType<typeof erstelleFakeRaf>
+
+  beforeEach(() => {
+    fake = erstelleFakeAudio()
+    uhr = erstelleFakeRaf()
+    setzeMicController(
+      erstelleMicController({ quelle: fake.quelle, raf: uhr.raf, caf: uhr.caf, jetzt: uhr.jetzt }),
+    )
+    useAppStore.setState({ screen: 'mic-test' })
+    useMicStore.setState({ ...MIC_START_ZUSTAND })
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  function meter(name: string): Element {
+    const alle = Array.from(document.querySelectorAll('[role="meter"]'))
+    const treffer = alle.find((m) => m.getAttribute('aria-label') === name)
+    if (treffer === undefined) throw new Error(`Kein Messbalken „${name}“`)
+    return treffer
+  }
+
+  it('zeigt im Ruhezustand Lautstärke und Erkennungssicherheit mit „–“ und keine Nadel', () => {
+    render(<MicTestScreen />)
+    expect(meter('Lautstärke').getAttribute('aria-valuetext')).toBe('–')
+    expect(meter('Erkennungssicherheit').getAttribute('aria-valuetext')).toBe('–')
+    expect(meter('Lautstärke').textContent).toContain('–')
+    const tuner = meter('Abweichung in Cent')
+    expect(tuner.querySelector('.tuner-nadel')).toBeNull()
+  })
+
+  it('zeigt bei einem A4 (Sinus, Amplitude 0,2) Pegel, Klarheit und die Stimmgerät-Nadel', async () => {
+    fake.setzeSignal(sinus(440, 4096, 48000, 0.2))
+    render(<MicTestScreen />)
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Mikrofon starten' }))
+    })
+    act(() => {
+      uhr.schritt(10)
+    })
+
+    expect(meter('Lautstärke').getAttribute('aria-valuetext')).toBe('−17 dB')
+    expect(meter('Erkennungssicherheit').getAttribute('aria-valuetext')).toMatch(/^[01],\d\d$/)
+    const tuner = meter('Abweichung in Cent')
+    expect(tuner.querySelector('.tuner-nadel')).not.toBeNull()
+    expect(tuner.querySelector('.tuner-band')).not.toBeNull()
+    expect(tuner.querySelector('.tuner-mitte')).not.toBeNull()
+  })
+
+  it('enthält keinen Timer, keinen Kopieren-Knopf und keine Checkliste (D-05)', async () => {
+    fake.setzeSignal(sinus(440, 4096, 48000, 0.2))
+    render(<MicTestScreen />)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Mikrofon starten' }))
+    })
+    act(() => {
+      uhr.schritt(10)
+    })
+    const text = document.body.textContent ?? ''
+    expect(text).not.toMatch(/Timer|Kopieren|Checkliste/)
+  })
+})
